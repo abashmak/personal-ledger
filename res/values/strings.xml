@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PersonalLedger</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="txt_no_ledgers">No ledgers have been added</string>
+    <string name="txt_my_ledgers">My Ledgers:</string>
+    <string name="txt_wait_ledgers">Please wait\nwhile your ledgers are retrieved&#8230;</string>
+    
+    <color name="text_brown_1">#4D2514</color>
+    
+</resources>
