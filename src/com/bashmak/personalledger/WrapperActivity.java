@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-public class WrapperActivity extends Activity
+public abstract class WrapperActivity extends Activity
 {
 	protected DatabaseHelper mHelper = new DatabaseHelper(this);
 	protected ActionBar mActionBar;
@@ -59,4 +59,6 @@ public class WrapperActivity extends Activity
 		TextView msg = (TextView) findViewById(R.id.message);
 		msg.setText(message);
 	}
+
+	public abstract void handleAsyncResult(String result);
 }

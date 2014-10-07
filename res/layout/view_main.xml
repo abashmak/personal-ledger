@@ -7,19 +7,29 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:onClick="onMainClicked"
-    android:clickable="true"
+    android:clickable="false"
     android:background="@drawable/background" >
     
-    <TextView
-        android:id="@+id/txtNoLedgers"
+    <LinearLayout
+        android:id="@+id/linHidden"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:orientation="horizontal"
+        android:visibility="invisible" />
+    
+    <TextView
+        android:id="@+id/txtMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:layout_above="@+id/linHidden"
+        android:gravity="center_horizontal"
         android:textColor="@color/text_brown_1"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:text="@string/txt_no_ledgers"
-        android:visibility="gone" />
+        android:visibility="visible" />
     
     <LinearLayout
         android:id="@+id/linListHolder"

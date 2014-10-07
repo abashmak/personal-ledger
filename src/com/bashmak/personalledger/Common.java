@@ -2,6 +2,8 @@ package com.bashmak.personalledger;
 
 import java.util.ArrayList;
 
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -17,6 +19,7 @@ public class Common
     
     public static String DropboxSecret; 
 	public static ArrayList<Ledger> Ledgers = new ArrayList<Ledger>();
+    public static ArrayList<JSONObject> ledgers = new ArrayList<JSONObject>();
 	public static String CreatorName = "Unknown";
 	public static String CreatorEmail = "unknown";
 
@@ -39,6 +42,7 @@ public class Common
     
 	public static void clearKeys(Context context)
 	{
+        DropboxSecret = "";
         SharedPreferences prefs = context.getSharedPreferences(DROPBOX_ACCOUNT_PREFS_NAME, 0);
         prefs.edit().remove(ACCESS_SECRET_NAME).commit();
 	}
@@ -50,6 +54,7 @@ public class Common
         {
             SharedPreferences prefs = context.getSharedPreferences(DROPBOX_ACCOUNT_PREFS_NAME, 0);
             prefs.edit().putString(ACCESS_SECRET_NAME, oauth2AccessToken).commit();
+        	DropboxSecret = oauth2AccessToken;
         }
     }
 }

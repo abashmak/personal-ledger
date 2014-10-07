@@ -1,0 +1,75 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="20dp"
+    android:layout_marginBottom="15dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp" >
+
+    <EditText
+        android:id="@+id/editName"
+        android:inputType="textCapCharacters"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/txtName"
+        android:textSize="14sp" />
+    
+    <TextView
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_alignBaseline="@+id/editName"
+        android:text=""
+        android:textColor="#bbb"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/editDescription"
+        android:inputType="number"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/txtDescription"
+        android:layout_below="@+id/editName"
+        android:layout_alignRight="@+id/editName"
+        android:textSize="14sp" />
+    
+    <TextView
+        android:id="@+id/txtDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_alignBaseline="@+id/editDescription"
+        android:text=""
+        android:textColor="#bbb"
+        android:textSize="16sp" />
+    
+    <LinearLayout
+        android:id="@+id/linBtnContainer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/editDescription"
+        android:orientation="horizontal" >
+    
+    	<Button
+        	android:id="@+id/btnCancel"
+        	android:layout_width="0dp"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:layout_marginRight="5dp"
+        	android:text="" />
+    
+    	<Button
+        	android:id="@+id/btnSubmit"
+        	android:layout_width="0dp"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:layout_marginLeft="5dp"
+        	android:text="" />
+    	
+    </LinearLayout>
+        
+    
+</RelativeLayout>

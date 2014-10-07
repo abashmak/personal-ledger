@@ -2,26 +2,35 @@ package com.bashmak.personalledger;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Dialog;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.ContactsContract;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.bashmak.beeutils.BeeLog;
+import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.android.AndroidAuthSession;
 
 public class MainActivity extends WrapperActivity
 {
 	private LedgerListAdapter mAdapter;
+	private String mMessage;
+    private DropboxAPI<AndroidAuthSession> mApi;
 	
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+		
 		BeeLog.setPrefs("PL_Main", 3);
-		setProgressView(getString(R.string.txt_wait_ledgers));
+		Common.init(this);
+        mApi = new DropboxAPI<AndroidAuthSession>(Common.buildSession(this));
 
 		// Obtain user's first name
 		Cursor c = getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
@@ -36,6 +45,7 @@ public class MainActivity extends WrapperActivity
 					Common.CreatorName = firstLast[0];
 				}
 			}
+			c.close();
 			BeeLog.i1("DEBUG", "User's name: " + Common.CreatorName);
 		}
 		
@@ -47,37 +57,57 @@ public class MainActivity extends WrapperActivity
 			Common.CreatorEmail = accounts[0].name;
 			BeeLog.i1("DEBUG", "User's email: " + Common.CreatorEmail);
 		}
-		
-		new Handler().postDelayed(new Runnable()
-		{
-			@Override public void run()
-			{
-				refreshUI();
-			}
-		}, 5000);
 	}
-	
-	private void refreshUI()
+
+	@Override protected void onResume()
 	{
-		setContentView(R.layout.view_main);
-		if (Common.Ledgers.isEmpty())
+        super.onResume();
+     
+        AndroidAuthSession session = mApi.getSession();
+
+        // The next part must be inserted in the onResume() method of the
+        // activity from which session.startAuthentication() was called, so
+        // that Dropbox authentication completes properly.
+        if (session.authenticationSuccessful())
+        {
+            try
+            {
+                // Mandatory call to complete the auth
+                session.finishAuthentication();
+                Common.storeAuth(this, session);
+            }
+            catch (IllegalStateException e)
+            {
+                BeeLog.e1("Error authenticating dropbox", e);
+            }
+        }
+
+        invalidateOptionsMenu();
+		if (Common.DropboxSecret.isEmpty())
 		{
-			findViewById(R.id.txtNoLedgers).setVisibility(View.VISIBLE);
-			findViewById(R.id.linListHolder).setVisibility(View.GONE);
+			mMessage = getString(R.string.txt_no_cloud);
+			refreshUI();
 		}
 		else
 		{
-			mAdapter = new LedgerListAdapter(this, android.R.layout.simple_list_item_1, Common.Ledgers);
-			((ListView) findViewById(R.id.linListHolder)).setAdapter(mAdapter);
-			findViewById(R.id.txtNoLedgers).setVisibility(View.GONE);
-			findViewById(R.id.linListHolder).setVisibility(View.VISIBLE);
+			setProgressView(getString(R.string.txt_wait_ledgers));
+            new GetFromDropboxAsync(this, mApi, "/ledgers.json").execute();
 		}
-	}
+    }
 
 	@Override public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
+		MenuItem dropbox = menu.findItem(R.id.action_dropbox);
+		if (Common.DropboxSecret.isEmpty())
+		{
+			dropbox.setTitle(R.string.action_dropbox_connect);
+		}
+		else
+		{
+			dropbox.setTitle(R.string.action_dropbox_disconnect);
+		}
 		return true;
 	}
 
@@ -86,16 +116,80 @@ public class MainActivity extends WrapperActivity
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings)
+		switch (item.getItemId())
 		{
+		case R.id.action_dropbox:
+			if (Common.DropboxSecret.isEmpty())
+			{
+	            mApi.getSession().startOAuth2Authentication(MainActivity.this);
+			}
+			else
+			{
+				invalidateOptionsMenu();
+				Common.clearKeys(this);
+				mMessage = getString(R.string.txt_no_cloud);
+				refreshUI();
+			}
+			return true;
+		case R.id.action_new_ledger:
+			showAddFeedDialog();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	public void onMainClicked(View view)
+
+
+	@Override public void handleAsyncResult(String result)
 	{
-		
+		if (result.isEmpty())
+		{
+			mMessage = getString(R.string.txt_no_ledgers);
+			refreshUI();
+		}
+		else
+		{
+			
+		}
+	}
+	
+	private void refreshUI()
+	{
+		setContentView(R.layout.view_main);
+		if (Common.Ledgers.isEmpty())
+		{
+			TextView message = (TextView) findViewById(R.id.txtMessage);
+			message.setVisibility(View.VISIBLE);
+			message.setText(mMessage);
+			findViewById(R.id.linListHolder).setVisibility(View.GONE);
+		}
+		else
+		{
+			mAdapter = new LedgerListAdapter(this, android.R.layout.simple_list_item_1, Common.Ledgers);
+			((ListView) findViewById(R.id.linListHolder)).setAdapter(mAdapter);
+			findViewById(R.id.txtMessage).setVisibility(View.GONE);
+			findViewById(R.id.linListHolder).setVisibility(View.VISIBLE);
+		}
+	}
+
+	private void showAddFeedDialog()
+	{
+    	final Dialog d = new Dialog(this, android.R.style.Theme_Dialog);
+    	d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+    	d.setContentView(R.layout.view_add_ledger);
+    	d.findViewById(R.id.btnCancel).setOnClickListener(new OnClickListener()
+    	{
+			@Override public void onClick(View v)
+			{
+				d.dismiss();
+			}
+		});
+    	d.findViewById(R.id.btnSubmit).setOnClickListener(new OnClickListener()
+    	{
+			@Override public void onClick(View v)
+			{
+				d.dismiss();
+			}
+		});
+    	d.show();
 	}
 }
