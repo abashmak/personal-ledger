@@ -1,5 +1,7 @@
 package com.bashmak.personalledger;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,15 +23,29 @@ public class MainActivity extends WrapperActivity
 		BeeLog.setPrefs("PL_Main", 3);
 		setProgressView(getString(R.string.txt_wait_ledgers));
 
+		// Obtain user's first name
 		Cursor c = getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
 		if (c != null && c.moveToFirst())
 		{
-			String[] columnNames = c.getColumnNames();
-			for (String col: columnNames)
+			String fullName = c.getString(c.getColumnIndex("display_name"));
+			if (fullName != null && !fullName.isEmpty())
 			{
-				String val = c.getString(c.getColumnIndex(col));
-				BeeLog.i1("DEBUG", "Col=" + col + ", val=" + val);
+				String firstLast[] = fullName.split(" ");
+				if (!firstLast[0].isEmpty())
+				{
+					Common.CreatorName = firstLast[0];
+				}
 			}
+			BeeLog.i1("DEBUG", "User's name: " + Common.CreatorName);
+		}
+		
+		// Obtain user's email
+		AccountManager am = AccountManager.get(this);
+		Account accounts[] = am.getAccountsByType("com.google");
+		if (accounts.length > 0)
+		{
+			Common.CreatorEmail = accounts[0].name;
+			BeeLog.i1("DEBUG", "User's email: " + Common.CreatorEmail);
 		}
 		
 		new Handler().postDelayed(new Runnable()
