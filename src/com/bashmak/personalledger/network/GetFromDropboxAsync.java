@@ -1,8 +1,9 @@
-package com.bashmak.personalledger;
+package com.bashmak.personalledger.network;
 
 import android.os.AsyncTask;
 
 import com.bashmak.beeutils.BeeLog;
+import com.bashmak.personalledger.activity.WrapperActivity;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.DropboxInputStream;
 

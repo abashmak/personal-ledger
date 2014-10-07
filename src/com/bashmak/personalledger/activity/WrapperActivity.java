@@ -1,4 +1,4 @@
-package com.bashmak.personalledger;
+package com.bashmak.personalledger.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -9,9 +9,10 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
+import com.bashmak.personalledger.R;
+
 public abstract class WrapperActivity extends Activity
 {
-	protected DatabaseHelper mHelper = new DatabaseHelper(this);
 	protected ActionBar mActionBar;
 	
 	@Override protected void onCreate(Bundle savedInstanceState)

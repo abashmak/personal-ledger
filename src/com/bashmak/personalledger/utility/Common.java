@@ -1,4 +1,4 @@
-package com.bashmak.personalledger;
+package com.bashmak.personalledger.utility;
 
 import java.util.ArrayList;
 
@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.bashmak.personalledger.Ledger;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AppKeyPair;
 
