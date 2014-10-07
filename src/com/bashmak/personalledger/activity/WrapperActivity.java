@@ -10,11 +10,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.bashmak.personalledger.R;
+import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.android.AndroidAuthSession;
 
 public abstract class WrapperActivity extends Activity
 {
 	protected ActionBar mActionBar;
-	
+    protected DropboxAPI<AndroidAuthSession> mApi;
+
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);

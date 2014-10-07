@@ -2,22 +2,20 @@ package com.bashmak.personalledger.activity;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Dialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bashmak.beeutils.BeeLog;
 import com.bashmak.personalledger.LedgerListAdapter;
 import com.bashmak.personalledger.R;
-import com.bashmak.personalledger.network.GetFromDropboxAsync;
+import com.bashmak.personalledger.network.DownloadTextFileAsync;
 import com.bashmak.personalledger.utility.Common;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
@@ -26,7 +24,6 @@ public class MainActivity extends WrapperActivity
 {
 	private LedgerListAdapter mAdapter;
 	private String mMessage;
-    private DropboxAPI<AndroidAuthSession> mApi;
 	
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
@@ -95,7 +92,7 @@ public class MainActivity extends WrapperActivity
 		else
 		{
 			setProgressView(getString(R.string.txt_wait_ledgers));
-            new GetFromDropboxAsync(this, mApi, "/ledgers.json").execute();
+            new DownloadTextFileAsync(this, mApi, "/ledgers.json").execute();
 		}
     }
 
@@ -136,12 +133,11 @@ public class MainActivity extends WrapperActivity
 			}
 			return true;
 		case R.id.action_new_ledger:
-			showAddFeedDialog();
+			startActivity(new Intent(this, AddLedgerActivity.class));
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
 
 	@Override public void handleAsyncResult(String result)
 	{
@@ -173,27 +169,5 @@ public class MainActivity extends WrapperActivity
 			findViewById(R.id.txtMessage).setVisibility(View.GONE);
 			findViewById(R.id.linListHolder).setVisibility(View.VISIBLE);
 		}
-	}
-
-	private void showAddFeedDialog()
-	{
-    	final Dialog d = new Dialog(this, android.R.style.Theme_Dialog);
-    	d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-    	d.setContentView(R.layout.view_add_ledger);
-    	d.findViewById(R.id.btnCancel).setOnClickListener(new OnClickListener()
-    	{
-			@Override public void onClick(View v)
-			{
-				d.dismiss();
-			}
-		});
-    	d.findViewById(R.id.btnSubmit).setOnClickListener(new OnClickListener()
-    	{
-			@Override public void onClick(View v)
-			{
-				d.dismiss();
-			}
-		});
-    	d.show();
 	}
 }

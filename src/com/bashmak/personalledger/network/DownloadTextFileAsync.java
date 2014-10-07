@@ -7,14 +7,14 @@ import com.bashmak.personalledger.activity.WrapperActivity;
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.DropboxAPI.DropboxInputStream;
 
-public class GetFromDropboxAsync extends AsyncTask<Void, Long, Boolean>
+public class DownloadTextFileAsync extends AsyncTask<Void, Long, Boolean>
 {
 	private WrapperActivity mActivity;
     private DropboxAPI<?> mApi;
     private String mPath;
     private String mResult;
 
-    public GetFromDropboxAsync(WrapperActivity activity, DropboxAPI<?> api, String dropboxPath)
+    public DownloadTextFileAsync(WrapperActivity activity, DropboxAPI<?> api, String dropboxPath)
     {
     	mActivity = activity;
         mApi = api;

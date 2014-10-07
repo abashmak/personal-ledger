@@ -2,6 +2,9 @@ package com.bashmak.personalledger;
 
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,13 +13,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class LedgerListAdapter extends ArrayAdapter<Ledger>
+import com.bashmak.beeutils.BeeLog;
+
+public class LedgerListAdapter extends ArrayAdapter<JSONObject>
 {
     private Context context; 
     private int layoutResourceId;    
-    private ArrayList<Ledger> data = null;
+    private ArrayList<JSONObject> data = null;
     
-    public LedgerListAdapter(Context context, int layoutResourceId, ArrayList<Ledger> data)
+    public LedgerListAdapter(Context context, int layoutResourceId, ArrayList<JSONObject> data)
     {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
@@ -24,7 +29,7 @@ public class LedgerListAdapter extends ArrayAdapter<Ledger>
         this.data = data;
     }
 	
-	public void setDataAndNotify(ArrayList<Ledger> data)
+	public void setDataAndNotify(ArrayList<JSONObject> data)
     {
 		this.data = data;
         notifyDataSetChanged();
@@ -41,7 +46,14 @@ public class LedgerListAdapter extends ArrayAdapter<Ledger>
         }
         
         TextView title = (TextView) row.findViewById(android.R.id.text1);
-        title.setText(data.get(position).Name);
+        try
+        {
+			title.setText(data.get(position).getString("title"));
+		}
+        catch (JSONException e)
+        {
+        	BeeLog.e1("Exception parsing ledger JSON object", e);
+		}
         
         return row;
     }
@@ -58,12 +70,12 @@ public class LedgerListAdapter extends ArrayAdapter<Ledger>
     	}
     }
     
-    @Override public Ledger getItem(int position)
+    @Override public JSONObject getItem(int position)
     {
     	return data.get(position);
     }
 
-    public ArrayList<Ledger> getData()
+    public ArrayList<JSONObject> getData()
     {
     	return data;
     }
