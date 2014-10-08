@@ -30,33 +30,27 @@
         android:textSize="20sp"
         android:visibility="visible" />
     
-    <LinearLayout
-        android:id="@+id/linListHolder"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+    <TextView
+        android:id="@+id/txtMyLedgers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:visibility="gone" >
-    
-	    <TextView
-	        android:id="@+id/txtMyLedgers"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:textColor="#fff"
-	        android:textStyle="bold"
-	        android:textSize="18sp"
-	        android:text="@string/txt_my_ledgers" />
+        android:textColor="#fff"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:text="@string/txt_my_ledgers" />
 	    
-	    <ListView
-	        android:id="@+id/listLedgers"
-	        android:background="@drawable/listview_bg"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_marginTop="20dp"
-	        android:divider="#888"
-	        android:dividerHeight="2dp" />
-        
-    </LinearLayout>
+    <ListView
+        android:id="@+id/listLedgers"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:layout_below="@+id/txtMyLedgers"
+        android:background="@drawable/listview_bg"
+        android:divider="#888"
+        android:dividerHeight="2dp" />
 
 </RelativeLayout>

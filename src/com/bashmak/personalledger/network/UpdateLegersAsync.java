@@ -28,21 +28,39 @@ public class UpdateLegersAsync extends AsyncTask<Void, Long, Boolean>
     {
         try
         {
-        	StringBuilder sb = new StringBuilder("[ ");
-        	for (JSONObject ledger : Common.Ledgers)
+        	int numLedgers = Common.Ledgers.size();
+        	if (numLedgers > 0)
         	{
-        		sb.append(ledger.toString()).append(",");
-        	}
-        	sb.replace(sb.length()-1, sb.length(), "]");
-        	byte[] bytes = sb.toString().getBytes("UTF-8");
-        	ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        	Common.DropboxApi.putFileOverwrite(mPath + "ledgers.json", bais, bytes.length, null);
-        	bais.close();
+	        	// Upload full ledgers.json
+	        	StringBuilder sb = new StringBuilder("[ ");
+	        	for (JSONObject ledger : Common.Ledgers)
+	        	{
+	        		sb.append(ledger.toString()).append(",");
+	        	}
+	        	sb.replace(sb.length()-1, sb.length(), "]");
+	        	byte[] bytes = sb.toString().getBytes("UTF-8");
+	        	ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+	        	Common.DropboxApi.putFileOverwrite(mPath + "ledgers.json", bais, bytes.length, null);
+	        	bais.close();
         	
-        	bytes = Common.genHtmlLedgers().getBytes("UTF-8");
-        	bais = new ByteArrayInputStream(bytes);
-        	Common.DropboxApi.putFileOverwrite(mPath + "ledgers.html", bais, bytes.length, null);
-        	bais.close();
+	        	// Recreate ledgers.html
+	        	bytes = Common.genHtmlLedgers().getBytes("UTF-8");
+	        	bais = new ByteArrayInputStream(bytes);
+	        	Common.DropboxApi.putFileOverwrite(mPath + "ledgers.html", bais, bytes.length, null);
+	        	bais.close();
+	        	
+	        	// Create folder path for the newly added ledger
+	        	JSONObject newLedger = Common.Ledgers.get(numLedgers-1);
+	        	String code = newLedger.optString("code");
+	        	Common.DropboxApi.createFolder(mPath + code);
+	        	
+	        	// Create ledger.html for the newly added ledger
+	        	bytes = Common.genHtmlLedger(newLedger).getBytes("UTF-8");
+	        	bais = new ByteArrayInputStream(bytes);
+	        	Common.DropboxApi.putFileOverwrite(mPath + "/" + code + "/ledger.html", bais, bytes.length, null);
+	        	bais.close();
+        	}
+        	
             return true;
         }
         catch (Exception e)

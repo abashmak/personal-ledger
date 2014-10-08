@@ -12,17 +12,21 @@ import android.provider.ContactsContract;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bashmak.beeutils.BeeLog;
+import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.LedgerListAdapter;
 import com.bashmak.personalledger.R;
 import com.bashmak.personalledger.network.DownloadTextFileAsync;
 import com.bashmak.personalledger.utility.Common;
 import com.dropbox.client2.android.AndroidAuthSession;
 
-public class MainActivity extends WrapperActivity
+public class MainActivity extends WrapperActivity implements OnItemClickListener, OnItemLongClickListener
 {
 	private LedgerListAdapter mAdapter;
 	private String mMessage;
@@ -171,6 +175,19 @@ public class MainActivity extends WrapperActivity
 		}
 		refreshUI();
 	}
+
+	@Override public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+	{
+		BeeLog.i1("DEBUG", "Inside onItemLongClick");
+		BeeToast.showTopToastShort(MainActivity.this, "Long click on item " + position);
+		return true;
+	}
+
+	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+	{
+		BeeLog.i1("DEBUG", "Inside onItemClick");
+		BeeToast.showBottomToastShort(MainActivity.this, "Short click on item " + position);
+	}
 	
 	private void refreshUI()
 	{
@@ -180,14 +197,19 @@ public class MainActivity extends WrapperActivity
 			TextView message = (TextView) findViewById(R.id.txtMessage);
 			message.setVisibility(View.VISIBLE);
 			message.setText(mMessage);
-			findViewById(R.id.linListHolder).setVisibility(View.GONE);
+			findViewById(R.id.txtMyLedgers).setVisibility(View.GONE);
+			findViewById(R.id.listLedgers).setVisibility(View.GONE);
 		}
 		else
 		{
 			mAdapter = new LedgerListAdapter(this, android.R.layout.simple_list_item_1, Common.Ledgers);
-			((ListView) findViewById(R.id.listLedgers)).setAdapter(mAdapter);
+			ListView lv = (ListView) findViewById(R.id.listLedgers);
+			lv.setAdapter(mAdapter);
+			lv.setOnItemClickListener(this);
+			lv.setOnItemLongClickListener(this);
 			findViewById(R.id.txtMessage).setVisibility(View.GONE);
-			findViewById(R.id.linListHolder).setVisibility(View.VISIBLE);
+			findViewById(R.id.txtMyLedgers).setVisibility(View.VISIBLE);
+			findViewById(R.id.listLedgers).setVisibility(View.VISIBLE);
 		}
 	}
 }

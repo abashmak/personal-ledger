@@ -65,12 +65,13 @@ public class Common
         }
     }
 
-    public static void addLedger(String title, String description)
+    public static String addLedger(String title, String description)
     {
 		JSONObject jObj = new JSONObject();
 		try
 		{
-			jObj.putOpt("code", genUniqueCode(title));
+			String code = genUniqueCode(title);
+			jObj.putOpt("code", code);
 			jObj.putOpt("title", title);
 			jObj.putOpt("description", description);
 			jObj.putOpt("creator", CreatorName);
@@ -79,10 +80,12 @@ public class Common
 			jObj.putOpt("modify_date", System.currentTimeMillis());
 			jObj.putOpt("template", 1);
 			Ledgers.add(jObj);
+			return code;
 		}
 		catch (JSONException e)
 		{
 			BeeLog.e1("Exception adding new ledger", e);
+			return "";
 		}
     }
     
@@ -95,7 +98,7 @@ public class Common
     	for (JSONObject ledger : Ledgers)
     	{
     		html.append("<tr>");
-    		html.append("<td>" + ledger.optString("title") + "</td>");
+    		html.append("<td><a href=\"" + ledger.optString("code") + "/test.html\">" + ledger.optString("title") + "</a></td>");
     		html.append("<td>" + ledger.optString("description") + "</td>");
     		html.append("<td>" + ledger.optString("creator") + "</td>");
     		html.append("<td>" + new Date(ledger.optLong("create_date")) + "</td>");
@@ -103,6 +106,18 @@ public class Common
     		html.append("</tr>");
     	}
     	return html.append("</table></body></html>").toString();
+    }
+    
+    public static String genHtmlLedger(JSONObject ledger)
+    {
+    	StringBuilder html = new StringBuilder("<!DOCTYPE html><html><head><title>Ledger</title></head><body>");
+    	html.append("<h1>" + ledger.optString("title") + "</h1>");
+    	html.append("<label><b>Description:</b><span>" + ledger.optString("description") + "</span></label><br>");
+    	html.append("<label><b>Created by:</b><span>" + ledger.optString("creator") + "</span></label><br>");
+    	html.append("<label><b>Email:</b><span>" + ledger.optString("email") + "</span></label><br>");
+    	html.append("<label><b>Created on:</b><span>" + new Date(ledger.optLong("create_date")) + "</span></label><br>");
+    	html.append("<label><b>Modified on: </b><span>" + new Date(ledger.optLong("modify_date")) + "</span></label><br>");
+    	return html.append("</body></html>").toString();
     }
     
     private static String genUniqueCode(String title)
