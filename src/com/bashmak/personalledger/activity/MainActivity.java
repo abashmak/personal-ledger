@@ -1,5 +1,8 @@
 package com.bashmak.personalledger.activity;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Intent;
@@ -17,7 +20,6 @@ import com.bashmak.personalledger.LedgerListAdapter;
 import com.bashmak.personalledger.R;
 import com.bashmak.personalledger.network.DownloadTextFileAsync;
 import com.bashmak.personalledger.utility.Common;
-import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 
 public class MainActivity extends WrapperActivity
@@ -31,7 +33,6 @@ public class MainActivity extends WrapperActivity
 		
 		BeeLog.setPrefs("PL_Main", 3);
 		Common.init(this);
-        mApi = new DropboxAPI<AndroidAuthSession>(Common.buildSession(this));
 
 		// Obtain user's first name
 		Cursor c = getContentResolver().query(ContactsContract.Profile.CONTENT_URI, null, null, null, null);
@@ -64,7 +65,7 @@ public class MainActivity extends WrapperActivity
 	{
         super.onResume();
      
-        AndroidAuthSession session = mApi.getSession();
+        AndroidAuthSession session = Common.DropboxApi.getSession();
 
         // The next part must be inserted in the onResume() method of the
         // activity from which session.startAuthentication() was called, so
@@ -92,7 +93,7 @@ public class MainActivity extends WrapperActivity
 		else
 		{
 			setProgressView(getString(R.string.txt_wait_ledgers));
-            new DownloadTextFileAsync(this, mApi, "/ledgers.json").execute();
+            new DownloadTextFileAsync(this, "/ledgers.json").execute();
 		}
     }
 
@@ -101,13 +102,18 @@ public class MainActivity extends WrapperActivity
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		MenuItem dropbox = menu.findItem(R.id.action_dropbox);
+		MenuItem ledger = menu.findItem(R.id.action_new_ledger);
 		if (Common.DropboxSecret.isEmpty())
 		{
 			dropbox.setTitle(R.string.action_dropbox_connect);
+			ledger.setEnabled(false);
+			//ledger.setVisible(false);
 		}
 		else
 		{
 			dropbox.setTitle(R.string.action_dropbox_disconnect);
+			ledger.setEnabled(true);
+			//ledger.setVisible(true);
 		}
 		return true;
 	}
@@ -122,12 +128,13 @@ public class MainActivity extends WrapperActivity
 		case R.id.action_dropbox:
 			if (Common.DropboxSecret.isEmpty())
 			{
-	            mApi.getSession().startOAuth2Authentication(MainActivity.this);
+	            Common.DropboxApi.getSession().startOAuth2Authentication(MainActivity.this);
 			}
 			else
 			{
 				invalidateOptionsMenu();
 				Common.clearKeys(this);
+				Common.Ledgers.clear();
 				mMessage = getString(R.string.txt_no_cloud);
 				refreshUI();
 			}
@@ -141,15 +148,28 @@ public class MainActivity extends WrapperActivity
 
 	@Override public void handleAsyncResult(String result)
 	{
+		Common.Ledgers.clear();
 		if (result.isEmpty())
 		{
 			mMessage = getString(R.string.txt_no_ledgers);
-			refreshUI();
 		}
 		else
 		{
-			
+			try
+			{
+				JSONArray jArr = new JSONArray(result);
+				int len = jArr.length();
+				for (int i = 0; i < len; i++)
+				{
+					Common.Ledgers.add((JSONObject) jArr.get(i));
+				}
+			}
+			catch (Exception e)
+			{
+				BeeLog.e1("Exception parsing ledgers.json", e);
+			}
 		}
+		refreshUI();
 	}
 	
 	private void refreshUI()

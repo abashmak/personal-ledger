@@ -11,10 +11,20 @@ import com.bashmak.personalledger.utility.Common;
 
 public class AddLedgerActivity extends WrapperActivity
 {
+	private String mTitle = "";
+	private String mDescription = "";
+	
 	@Override public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.view_add_ledger);
+	}
+
+	@Override public void onResume()
+	{
+		super.onResume();
+		((EditText) findViewById(R.id.editTitle)).setText(mTitle);
+		((EditText) findViewById(R.id.editDescription)).setText(mDescription);
 	}
 	
 	@Override public void handleAsyncResult(String result)
@@ -39,26 +49,26 @@ public class AddLedgerActivity extends WrapperActivity
 	public void onSubmitClicked(View view)
 	{
 		EditText et = (EditText) findViewById(R.id.editTitle);
-		String title = et.getText().toString().trim();
-		if (title.isEmpty())
+		mTitle = et.getText().toString().trim();
+		if (mTitle.isEmpty())
 		{
 			BeeToast.showCenteredToastShort(this, "You must enter a ledger title");
 			return;
 		}
 
 		et = (EditText) findViewById(R.id.editDescription);
-		String description = et.getText().toString().trim();
-		if (description.isEmpty())
+		mDescription = et.getText().toString().trim();
+		if (mDescription.isEmpty())
 		{
 			BeeToast.showCenteredToastShort(this, "You must enter a ledger description");
 			return;
 		}
-		description = description.replaceAll("\n", " ");
+		String description = mDescription.replaceAll("\n", " ");
 		
-		Common.addLedger(title.replaceAll(" ", ""), title, description);
+		Common.addLedger(mTitle.replaceAll(" ", ""), mTitle, description);
 
 		hideKeyboard(view);
 		setProgressView(getString(R.string.txt_wait_create));
-        new UploadTextFileAsync(this, mApi, "/ledgers.json").execute();
+        new UploadTextFileAsync(this, "/ledgers.json").execute();
 	}
 }

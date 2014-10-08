@@ -1,23 +1,24 @@
 package com.bashmak.personalledger.network;
 
+import java.io.ByteArrayOutputStream;
+
 import android.os.AsyncTask;
 
 import com.bashmak.beeutils.BeeLog;
 import com.bashmak.personalledger.activity.WrapperActivity;
-import com.dropbox.client2.DropboxAPI;
+import com.bashmak.personalledger.utility.Common;
 import com.dropbox.client2.DropboxAPI.DropboxInputStream;
 
 public class DownloadTextFileAsync extends AsyncTask<Void, Long, Boolean>
 {
+	private final static String TAG = "PL_DN_TEXT";
 	private WrapperActivity mActivity;
-    private DropboxAPI<?> mApi;
     private String mPath;
     private String mResult;
 
-    public DownloadTextFileAsync(WrapperActivity activity, DropboxAPI<?> api, String dropboxPath)
+    public DownloadTextFileAsync(WrapperActivity activity, String dropboxPath)
     {
     	mActivity = activity;
-        mApi = api;
         mPath = dropboxPath;
         mResult = "";
     }
@@ -26,20 +27,16 @@ public class DownloadTextFileAsync extends AsyncTask<Void, Long, Boolean>
     {
         try
         {
-            DropboxInputStream dis = mApi.getFileStream(mPath, null);
-			StringBuilder sb = new StringBuilder();
-			byte[] buffer = new byte[8192];
-			while (dis.read(buffer) != -1)
-			{
-				sb.append(new String(buffer));
-			}
-			mResult = sb.toString();
-
+            DropboxInputStream dis = Common.DropboxApi.getFileStream(mPath, null);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            dis.copyStreamToOutput(baos, null);
+            mResult = baos.toString("UTF-8");
+            BeeLog.i1(TAG, mResult);
             return true;
         }
         catch (Exception e)
         {
-        	BeeLog.w1("Dropbox api exception: " + e.toString());
+        	BeeLog.w1(TAG, "Dropbox api exception: " + e.toString());
             return false;
         }
     }

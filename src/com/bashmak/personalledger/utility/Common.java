@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.bashmak.beeutils.BeeLog;
+import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AppKeyPair;
 
@@ -20,6 +21,8 @@ public class Common
     private final static String ACCESS_SECRET_NAME = "access_secret";
     
     public static String DropboxSecret; 
+    public static DropboxAPI<AndroidAuthSession> DropboxApi;
+    
     public static ArrayList<JSONObject> Ledgers = new ArrayList<JSONObject>();
 	public static String CreatorName = "Unknown";
 	public static String CreatorEmail = "unknown";
@@ -28,6 +31,8 @@ public class Common
 	{
         SharedPreferences prefs = context.getSharedPreferences(DROPBOX_ACCOUNT_PREFS_NAME, 0);
         DropboxSecret = prefs.getString(ACCESS_SECRET_NAME, "");
+        DropboxApi = new DropboxAPI<AndroidAuthSession>(buildSession(context));
+        Ledgers.clear();
 	}
 	
     public static AndroidAuthSession buildSession(Context context)
