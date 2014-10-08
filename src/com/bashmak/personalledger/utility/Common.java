@@ -1,6 +1,7 @@
 package com.bashmak.personalledger.utility;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,12 +65,12 @@ public class Common
         }
     }
 
-    public static void addLedger(String code, String title, String description)
+    public static void addLedger(String title, String description)
     {
 		JSONObject jObj = new JSONObject();
 		try
 		{
-			jObj.putOpt("code", code);
+			jObj.putOpt("code", genUniqueCode(title));
 			jObj.putOpt("title", title);
 			jObj.putOpt("description", description);
 			jObj.putOpt("creator", CreatorName);
@@ -83,5 +84,38 @@ public class Common
 		{
 			BeeLog.e1("Exception adding new ledger", e);
 		}
+    }
+    
+    public static String genHtmlLedgers()
+    {
+    	StringBuilder html = new StringBuilder();
+    	String style = "<style>table, th, td {border: 1px solid black; border-collapse: collapse;} th, td {padding: 5px; text-align: left;}</style>";
+    	html.append("<!DOCTYPE html><html><head><title>My Ledgers</title>" + style + "</head><body><table style=\"width:100%\">");
+    	html.append("<tr><th>Title</th><th>Description</th><th>Created By</th><th>Created On</th><th>Modified On:</th></tr>");
+    	for (JSONObject ledger : Ledgers)
+    	{
+    		html.append("<tr>");
+    		html.append("<td>" + ledger.optString("title") + "</td>");
+    		html.append("<td>" + ledger.optString("description") + "</td>");
+    		html.append("<td>" + ledger.optString("creator") + "</td>");
+    		html.append("<td>" + new Date(ledger.optLong("create_date")) + "</td>");
+    		html.append("<td>" + new Date(ledger.optLong("modify_date")) + "</td>");
+    		html.append("</tr>");
+    	}
+    	return html.append("</table></body></html>").toString();
+    }
+    
+    private static String genUniqueCode(String title)
+    {
+    	title = title.replaceAll("\\s+","");
+    	int num = 0;
+    	for (JSONObject ledger : Ledgers)
+    	{
+    		if (ledger.optString("code").startsWith(title))
+    		{
+    			num++;
+    		}
+    	}
+    	return title + "_" + num;
     }
 }

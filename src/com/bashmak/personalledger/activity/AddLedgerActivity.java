@@ -6,7 +6,7 @@ import android.widget.EditText;
 
 import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.R;
-import com.bashmak.personalledger.network.UploadTextFileAsync;
+import com.bashmak.personalledger.network.UpdateLegersAsync;
 import com.bashmak.personalledger.utility.Common;
 
 public class AddLedgerActivity extends WrapperActivity
@@ -65,10 +65,10 @@ public class AddLedgerActivity extends WrapperActivity
 		}
 		String description = mDescription.replaceAll("\n", " ");
 		
-		Common.addLedger(mTitle.replaceAll(" ", ""), mTitle, description);
+		Common.addLedger(mTitle, description);
 
 		hideKeyboard(view);
 		setProgressView(getString(R.string.txt_wait_create));
-        new UploadTextFileAsync(this, "/ledgers.json").execute();
+        new UpdateLegersAsync(this, "/").execute();
 	}
 }

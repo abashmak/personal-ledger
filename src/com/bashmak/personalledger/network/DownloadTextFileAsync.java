@@ -31,6 +31,7 @@ public class DownloadTextFileAsync extends AsyncTask<Void, Long, Boolean>
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             dis.copyStreamToOutput(baos, null);
             mResult = baos.toString("UTF-8");
+            baos.close();
             BeeLog.i1(TAG, mResult);
             return true;
         }

@@ -10,14 +10,14 @@ import com.bashmak.beeutils.BeeLog;
 import com.bashmak.personalledger.activity.WrapperActivity;
 import com.bashmak.personalledger.utility.Common;
 
-public class UploadTextFileAsync extends AsyncTask<Void, Long, Boolean>
+public class UpdateLegersAsync extends AsyncTask<Void, Long, Boolean>
 {
 	private final static String TAG = "PL_UP_TEXT";
 	private WrapperActivity mActivity;
     private String mPath;
     private String mResult;
 
-    public UploadTextFileAsync(WrapperActivity activity, String dropboxPath)
+    public UpdateLegersAsync(WrapperActivity activity, String dropboxPath)
     {
     	mActivity = activity;
         mPath = dropboxPath;
@@ -36,7 +36,13 @@ public class UploadTextFileAsync extends AsyncTask<Void, Long, Boolean>
         	sb.replace(sb.length()-1, sb.length(), "]");
         	byte[] bytes = sb.toString().getBytes("UTF-8");
         	ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        	Common.DropboxApi.putFileOverwrite(mPath, bais, bytes.length, null);
+        	Common.DropboxApi.putFileOverwrite(mPath + "ledgers.json", bais, bytes.length, null);
+        	bais.close();
+        	
+        	bytes = Common.genHtmlLedgers().getBytes("UTF-8");
+        	bais = new ByteArrayInputStream(bytes);
+        	Common.DropboxApi.putFileOverwrite(mPath + "ledgers.html", bais, bytes.length, null);
+        	bais.close();
             return true;
         }
         catch (Exception e)
