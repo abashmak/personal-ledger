@@ -11,6 +11,7 @@
     <string name="txt_no_cloud">You have not connected\nyour cloud storage provider</string>
     <string name="txt_my_ledgers">My Ledgers:</string>
     <string name="txt_wait_ledgers">Please wait while\nyour ledgers are retrieved&#8230;</string>
+    <string name="txt_wait_create">Please wait while your\nledger is created and uploaded&#8230;</string>
     <string name="txt_ledger_title">Title</string>
     <string name="txt_ledger_description">Description</string>
     

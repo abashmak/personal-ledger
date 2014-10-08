@@ -6,7 +6,7 @@ import android.widget.EditText;
 
 import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.R;
-import com.bashmak.personalledger.network.DownloadTextFileAsync;
+import com.bashmak.personalledger.network.UploadTextFileAsync;
 import com.bashmak.personalledger.utility.Common;
 
 public class AddLedgerActivity extends WrapperActivity
@@ -19,6 +19,16 @@ public class AddLedgerActivity extends WrapperActivity
 	
 	@Override public void handleAsyncResult(String result)
 	{
+		if (result.isEmpty())
+		{
+			BeeToast.showCenteredToastShort(this, "Success!");
+			finish();
+		}
+		else
+		{
+			BeeToast.showCenteredToastShort(this, "Unable to create ledger: " + result);
+			setContentView(R.layout.view_add_ledger);
+		}
 	}
 	
 	public void onCancelClicked(View view)
@@ -47,7 +57,8 @@ public class AddLedgerActivity extends WrapperActivity
 		
 		Common.addLedger(title.replaceAll(" ", ""), title, description);
 
-		setProgressView(getString(R.string.txt_wait_ledgers));
-        new DownloadTextFileAsync(this, mApi, "").execute();
+		hideKeyboard(view);
+		setProgressView(getString(R.string.txt_wait_create));
+        new UploadTextFileAsync(this, mApi, "/ledgers.json").execute();
 	}
 }

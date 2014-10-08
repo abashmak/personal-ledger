@@ -10,7 +10,9 @@ import com.bashmak.beeutils.BeeLog;
 import com.bashmak.personalledger.activity.WrapperActivity;
 import com.bashmak.personalledger.utility.Common;
 import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.ProgressListener;
 
+@SuppressWarnings("deprecation")
 public class UploadTextFileAsync extends AsyncTask<Void, Long, Boolean>
 {
 	private WrapperActivity mActivity;
@@ -36,12 +38,18 @@ public class UploadTextFileAsync extends AsyncTask<Void, Long, Boolean>
         		sb.append(ledger.toString());
         	}
         	StringBufferInputStream sbis = new StringBufferInputStream(sb.toString());
-            String path = mPath + "/";
+        	mApi.putFileOverwrite(mPath, sbis, sb.length(), new ProgressListener()
+        	{
+				@Override public void onProgress(long arg0, long arg1)
+				{
+				}
+			});
             return true;
         }
         catch (Exception e)
         {
         	BeeLog.w1("Dropbox api exception: " + e.toString());
+        	mResult = "unknown error";
             return false;
         }
     }

@@ -165,7 +165,7 @@ public class MainActivity extends WrapperActivity
 		else
 		{
 			mAdapter = new LedgerListAdapter(this, android.R.layout.simple_list_item_1, Common.Ledgers);
-			((ListView) findViewById(R.id.linListHolder)).setAdapter(mAdapter);
+			((ListView) findViewById(R.id.listLedgers)).setAdapter(mAdapter);
 			findViewById(R.id.txtMessage).setVisibility(View.GONE);
 			findViewById(R.id.linListHolder).setVisibility(View.VISIBLE);
 		}
