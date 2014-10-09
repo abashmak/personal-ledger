@@ -199,6 +199,9 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 
 	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
+		Intent i = new Intent(this, ViewLedgerActivity.class);
+		i.putExtra("position", position);
+		startActivity(i);
 	}
 	
 	private void refreshUI()
@@ -237,7 +240,9 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 				switch (option)
 				{
 				case 0:
-					BeeToast.showCenteredToastShort(MainActivity.this, "View ledger selected");
+					Intent i = new Intent(MainActivity.this, ViewLedgerActivity.class);
+					i.putExtra("position", position);
+					startActivity(i);
     			   break;
 				case 1:
 					AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
