@@ -24,13 +24,15 @@ import com.bashmak.beeutils.BeeLog;
 import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.LedgerListAdapter;
 import com.bashmak.personalledger.R;
+import com.bashmak.personalledger.network.ApiResult;
 import com.bashmak.personalledger.network.DeleteLedgerAsync;
-import com.bashmak.personalledger.network.DownloadTextFileAsync;
+import com.bashmak.personalledger.network.GetLedgersAsync;
 import com.bashmak.personalledger.utility.Common;
 import com.dropbox.client2.android.AndroidAuthSession;
 
 public class MainActivity extends WrapperActivity implements OnItemClickListener, OnItemLongClickListener
 {
+	private final static String TAG = "PL-Main";
 	private LedgerListAdapter mAdapter;
 	private String mMessage;
 	
@@ -38,7 +40,7 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 	{
 		super.onCreate(savedInstanceState);
 		
-		BeeLog.setPrefs("PL_Main", 3);
+		BeeLog.setPrefs("PL-", 3);
 		Common.init(this);
 
 		// Obtain user's first name
@@ -55,7 +57,7 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 				}
 			}
 			c.close();
-			BeeLog.i1("DEBUG", "User's name: " + Common.CreatorName);
+			BeeLog.i1(TAG, "User's name: " + Common.CreatorName);
 		}
 		
 		// Obtain user's email
@@ -64,7 +66,7 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 		if (accounts.length > 0)
 		{
 			Common.CreatorEmail = accounts[0].name;
-			BeeLog.i1("DEBUG", "User's email: " + Common.CreatorEmail);
+			BeeLog.i1(TAG, "User's email: " + Common.CreatorEmail);
 		}
 	}
 
@@ -87,7 +89,7 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
             }
             catch (IllegalStateException e)
             {
-                BeeLog.e1("Error authenticating dropbox", e);
+                BeeLog.e1(TAG, "Error authenticating dropbox", e);
             }
         }
 
@@ -100,7 +102,7 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 		else
 		{
 			setProgressView(getString(R.string.txt_wait_ledgers));
-            new DownloadTextFileAsync(this, "/ledgers.json").execute();
+            new GetLedgersAsync(this, "/ledgers.json").execute();
 		}
     }
 
@@ -153,17 +155,18 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override public void handleAsyncResult(String result)
+	@Override public void handleAsyncResult(ApiResult result)
 	{
-		if (result.equals("unknown error"))
+		if (!result.Error.isEmpty())
 		{
-			// TODO: handle this
+			Common.Ledgers.clear();
+			mMessage = getString(R.string.txt_no_ledgers);
 		}
-		else if (result.equals("delete success"))
+		else if (result.Response.equals("delete success"))
 		{
 			BeeToast.showCenteredToastShort(this, "Successfully deleted ledger");
 		}
-		else if (result.isEmpty())
+		else if (result.Response.isEmpty())
 		{
 			Common.Ledgers.clear();
 			mMessage = getString(R.string.txt_no_ledgers);
@@ -173,7 +176,7 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 			Common.Ledgers.clear();
 			try
 			{
-				JSONArray jArr = new JSONArray(result);
+				JSONArray jArr = new JSONArray(result.Response);
 				int len = jArr.length();
 				for (int i = 0; i < len; i++)
 				{
@@ -182,7 +185,7 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 			}
 			catch (Exception e)
 			{
-				BeeLog.e1("Exception parsing ledgers.json", e);
+				BeeLog.e1(TAG, "Exception parsing ledgers.json", e);
 			}
 		}
 		refreshUI();
@@ -196,8 +199,6 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 
 	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
-		BeeLog.i1("DEBUG", "Inside onItemClick");
-		BeeToast.showBottomToastShort(MainActivity.this, "Short click on item " + position);
 	}
 	
 	private void refreshUI()

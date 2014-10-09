@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.bashmak.personalledger.R;
+import com.bashmak.personalledger.network.ApiResult;
 
 public abstract class WrapperActivity extends Activity
 {
@@ -61,5 +62,5 @@ public abstract class WrapperActivity extends Activity
 		msg.setText(message);
 	}
 
-	public abstract void handleAsyncResult(String result);
+	public abstract void handleAsyncResult(ApiResult result);
 }

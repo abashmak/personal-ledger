@@ -8,19 +8,20 @@ import com.bashmak.beeutils.BeeLog;
 import com.bashmak.personalledger.activity.WrapperActivity;
 import com.bashmak.personalledger.utility.Common;
 import com.dropbox.client2.DropboxAPI.DropboxInputStream;
+import com.dropbox.client2.exception.DropboxServerException;
 
-public class DownloadTextFileAsync extends AsyncTask<Void, Long, Boolean>
+public class GetLedgersAsync extends AsyncTask<Void, Long, Boolean>
 {
-	private final static String TAG = "PL-DownloadLedgers";
+	private final static String TAG = "PL-GetLedgers";
 	private WrapperActivity mActivity;
     private String mPath;
-    private String mResult;
+    private ApiResult mResult;
 
-    public DownloadTextFileAsync(WrapperActivity activity, String dropboxPath)
+    public GetLedgersAsync(WrapperActivity activity, String dropboxPath)
     {
     	mActivity = activity;
         mPath = dropboxPath;
-        mResult = "";
+        mResult = new ApiResult();
     }
 
     @Override protected Boolean doInBackground(Void... params)
@@ -30,14 +31,23 @@ public class DownloadTextFileAsync extends AsyncTask<Void, Long, Boolean>
             DropboxInputStream dis = Common.DropboxApi.getFileStream(mPath, null);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             dis.copyStreamToOutput(baos, null);
-            mResult = baos.toString("UTF-8");
+            mResult.Response = baos.toString("UTF-8");
             baos.close();
-            BeeLog.i1(TAG, mResult);
+            dis.close();
             return true;
+        }
+        catch (DropboxServerException e)
+        {
+        	if (e.error != DropboxServerException._404_NOT_FOUND)
+        	{
+        		mResult.Error = "Dropbox error: " + e.reason;
+        	}
+        	return false;
         }
         catch (Exception e)
         {
         	BeeLog.w1(TAG, "Dropbox api exception: " + e.toString());
+        	mResult.Error = "unknown error";
             return false;
         }
     }

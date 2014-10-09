@@ -15,13 +15,13 @@ public class UpdateLegersAsync extends AsyncTask<Void, Long, Boolean>
 	private final static String TAG = "PL-UpdateLedgers";
 	private WrapperActivity mActivity;
     private String mPath;
-    private String mResult;
+    private ApiResult mResult;
 
     public UpdateLegersAsync(WrapperActivity activity, String dropboxPath)
     {
     	mActivity = activity;
         mPath = dropboxPath;
-        mResult = "";
+        mResult = new ApiResult("Success!");
     }
 
     @Override protected Boolean doInBackground(Void... params)
@@ -57,7 +57,7 @@ public class UpdateLegersAsync extends AsyncTask<Void, Long, Boolean>
 	        	// Create ledger.html for the newly added ledger
 	        	bytes = Common.genHtmlLedger(newLedger).getBytes("UTF-8");
 	        	bais = new ByteArrayInputStream(bytes);
-	        	Common.DropboxApi.putFileOverwrite(mPath + "/" + code + "/ledger.html", bais, bytes.length, null);
+	        	Common.DropboxApi.putFileOverwrite(mPath + "/" + code + "/index.html", bais, bytes.length, null);
 	        	bais.close();
         	}
         	
@@ -66,7 +66,7 @@ public class UpdateLegersAsync extends AsyncTask<Void, Long, Boolean>
         catch (Exception e)
         {
         	BeeLog.w1(TAG, "Dropbox api exception: " + e.toString());
-        	mResult = "unknown error";
+        	mResult.Error = "unknown error";
         	if (Common.Ledgers.size() > 0)
         	{
         		Common.Ledgers.remove(Common.Ledgers.size()-1);

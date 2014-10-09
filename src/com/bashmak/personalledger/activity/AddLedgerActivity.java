@@ -6,6 +6,7 @@ import android.widget.EditText;
 
 import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.R;
+import com.bashmak.personalledger.network.ApiResult;
 import com.bashmak.personalledger.network.UpdateLegersAsync;
 import com.bashmak.personalledger.utility.Common;
 
@@ -27,17 +28,17 @@ public class AddLedgerActivity extends WrapperActivity
 		((EditText) findViewById(R.id.editDescription)).setText(mDescription);
 	}
 	
-	@Override public void handleAsyncResult(String result)
+	@Override public void handleAsyncResult(ApiResult result)
 	{
-		if (result.isEmpty())
-		{
-			BeeToast.showCenteredToastShort(this, "Success!");
-			finish();
-		}
-		else
+		if (!result.Error.isEmpty())
 		{
 			BeeToast.showCenteredToastShort(this, "Unable to create ledger: " + result);
 			setContentView(R.layout.view_add_ledger);
+		}
+		else
+		{
+			BeeToast.showCenteredToastShort(this, result.Response);
+			finish();
 		}
 	}
 	

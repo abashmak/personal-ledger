@@ -15,13 +15,13 @@ public class DeleteLedgerAsync extends AsyncTask<String, Long, Boolean>
 	private final static String TAG = "PL-DeleteLedger";
 	private WrapperActivity mActivity;
     private String mPath;
-    private String mResult;
+    private ApiResult mResult;
 
     public DeleteLedgerAsync(WrapperActivity activity, String dropboxPath)
     {
     	mActivity = activity;
         mPath = dropboxPath;
-        mResult = "delete success";
+        mResult = new ApiResult("delete success");
     }
 
     @Override protected Boolean doInBackground(String... params)
@@ -64,7 +64,7 @@ public class DeleteLedgerAsync extends AsyncTask<String, Long, Boolean>
         catch (Exception e)
         {
         	BeeLog.w1(TAG, "Dropbox api exception: " + e.toString());
-        	mResult = "unknown error";
+        	mResult.Error = "unknown error";
         	if (Common.Ledgers.size() > 0)
         	{
         		Common.Ledgers.remove(Common.Ledgers.size()-1);
