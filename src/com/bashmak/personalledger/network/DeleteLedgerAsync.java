@@ -10,21 +10,21 @@ import com.bashmak.beeutils.BeeLog;
 import com.bashmak.personalledger.activity.WrapperActivity;
 import com.bashmak.personalledger.utility.Common;
 
-public class UpdateLegersAsync extends AsyncTask<Void, Long, Boolean>
+public class DeleteLedgerAsync extends AsyncTask<String, Long, Boolean>
 {
-	private final static String TAG = "PL-UpdateLedgers";
+	private final static String TAG = "PL-DeleteLedger";
 	private WrapperActivity mActivity;
     private String mPath;
     private String mResult;
 
-    public UpdateLegersAsync(WrapperActivity activity, String dropboxPath)
+    public DeleteLedgerAsync(WrapperActivity activity, String dropboxPath)
     {
     	mActivity = activity;
         mPath = dropboxPath;
-        mResult = "";
+        mResult = "delete success";
     }
 
-    @Override protected Boolean doInBackground(Void... params)
+    @Override protected Boolean doInBackground(String... params)
     {
         try
         {
@@ -48,18 +48,16 @@ public class UpdateLegersAsync extends AsyncTask<Void, Long, Boolean>
 	        	bais = new ByteArrayInputStream(bytes);
 	        	Common.DropboxApi.putFileOverwrite(mPath + "ledgers.html", bais, bytes.length, null);
 	        	bais.close();
-	        	
-	        	// Create folder path for the newly added ledger
-	        	JSONObject newLedger = Common.Ledgers.get(numLedgers-1);
-	        	String code = newLedger.optString("code");
-	        	Common.DropboxApi.createFolder(mPath + code);
-	        	
-	        	// Create ledger.html for the newly added ledger
-	        	bytes = Common.genHtmlLedger(newLedger).getBytes("UTF-8");
-	        	bais = new ByteArrayInputStream(bytes);
-	        	Common.DropboxApi.putFileOverwrite(mPath + "/" + code + "/ledger.html", bais, bytes.length, null);
-	        	bais.close();
         	}
+        	else
+        	{
+        		// Delete ledgers.json and ledgers.html
+            	Common.DropboxApi.delete(mPath + "ledgers.json");
+            	Common.DropboxApi.delete(mPath + "ledgers.html");
+        	}
+
+        	// Delete ledger folder
+        	Common.DropboxApi.delete(mPath + params[0]);
         	
             return true;
         }

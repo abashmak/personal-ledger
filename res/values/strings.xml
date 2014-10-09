@@ -12,8 +12,13 @@
     <string name="txt_my_ledgers">My Ledgers:</string>
     <string name="txt_wait_ledgers">Retrieving all ledgers&#8230;</string>
     <string name="txt_wait_create">Please wait while your\nledger is created and uploaded&#8230;</string>
+    <string name="txt_wait_delete">Please wait\nledger deletion in progress&#8230;</string>
     <string name="txt_ledger_title">Title</string>
     <string name="txt_ledger_description">Description</string>
+    <string name="txt_delete_ledger">Delete</string>
+    <string name="txt_view_ledger">View</string>
+    <string name="txt_ledger_actions">Ledger Actions</string>
+    <string name="txt_confirm_delete">Confirm Deletion!</string>
     
     <string name="btn_submit">Submit</string>
     <string name="btn_cancel">Cancel</string>

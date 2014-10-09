@@ -11,7 +11,7 @@ import com.dropbox.client2.DropboxAPI.DropboxInputStream;
 
 public class DownloadTextFileAsync extends AsyncTask<Void, Long, Boolean>
 {
-	private final static String TAG = "PL_DN_TEXT";
+	private final static String TAG = "PL-DownloadLedgers";
 	private WrapperActivity mActivity;
     private String mPath;
     private String mResult;

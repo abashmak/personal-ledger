@@ -5,6 +5,8 @@ import org.json.JSONObject;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ import com.bashmak.beeutils.BeeLog;
 import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.LedgerListAdapter;
 import com.bashmak.personalledger.R;
+import com.bashmak.personalledger.network.DeleteLedgerAsync;
 import com.bashmak.personalledger.network.DownloadTextFileAsync;
 import com.bashmak.personalledger.utility.Common;
 import com.dropbox.client2.android.AndroidAuthSession;
@@ -152,13 +155,22 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 
 	@Override public void handleAsyncResult(String result)
 	{
-		Common.Ledgers.clear();
-		if (result.isEmpty())
+		if (result.equals("unknown error"))
 		{
+			// TODO: handle this
+		}
+		else if (result.equals("delete success"))
+		{
+			BeeToast.showCenteredToastShort(this, "Successfully deleted ledger");
+		}
+		else if (result.isEmpty())
+		{
+			Common.Ledgers.clear();
 			mMessage = getString(R.string.txt_no_ledgers);
 		}
 		else
 		{
+			Common.Ledgers.clear();
 			try
 			{
 				JSONArray jArr = new JSONArray(result);
@@ -178,8 +190,7 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 
 	@Override public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
 	{
-		BeeLog.i1("DEBUG", "Inside onItemLongClick");
-		BeeToast.showTopToastShort(MainActivity.this, "Long click on item " + position);
+		showContextMenu(position);
 		return true;
 	}
 
@@ -212,4 +223,42 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 			findViewById(R.id.listLedgers).setVisibility(View.VISIBLE);
 		}
 	}
+
+	private void showContextMenu(final int position)
+    {
+		CharSequence[] options = {getString(R.string.txt_view_ledger), getString(R.string.txt_delete_ledger)};
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.txt_ledger_actions);
+		builder.setItems(options, new DialogInterface.OnClickListener()
+		{
+			@Override public void onClick(DialogInterface dialog, int option)
+			{
+				switch (option)
+				{
+				case 0:
+					BeeToast.showCenteredToastShort(MainActivity.this, "View ledger selected");
+    			   break;
+				case 1:
+					AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+					builder.setTitle(R.string.txt_confirm_delete);
+					builder.setPositiveButton(R.string.btn_submit, new DialogInterface.OnClickListener()
+					{
+						@Override public void onClick(DialogInterface dialog, int which)
+						{
+							JSONObject ledger = mAdapter.getItem(position);
+							Common.Ledgers.remove(position);
+							setProgressView(getString(R.string.txt_wait_delete));
+							new DeleteLedgerAsync(MainActivity.this, "/").execute(ledger.optString("code"));
+						}
+					});
+					builder.setNegativeButton(R.string.btn_cancel, null);
+					builder.create().show();
+    			   break;
+				default:
+    			   break;
+    		   }
+    	   }
+       });
+       builder.create().show();
+    }
 }
