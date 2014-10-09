@@ -28,8 +28,9 @@ import com.bashmak.personalledger.utility.Common;
 public class ViewLedgerActivity extends WrapperActivity implements OnItemClickListener, OnItemLongClickListener
 {
 	private final String TAG = "PL-Ledger";
-	private JSONObject ledger;
+	private JSONObject mLedger;
 	private EntryListAdapter mAdapter;
+	private ArrayList<JSONObject> mEntries = new ArrayList<JSONObject>();
 	
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
@@ -37,12 +38,12 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 		
 		setContentView(R.layout.view_ledger);
 		int position = getIntent().getExtras().getInt("position");
-		ledger = Common.Ledgers.get(position);
-		((TextView) findViewById(R.id.txtTitle)).setText(ledger.optString("title"));
-		((TextView) findViewById(R.id.txtDescription)).setText(ledger.optString("description"));
-		((TextView) findViewById(R.id.txtCreatedBy)).setText(ledger.optString("creator"));
-		((TextView) findViewById(R.id.txtCreatedOn)).setText(new Date(ledger.optLong("create_date")).toString());
-		((TextView) findViewById(R.id.txtModified)).setText(new Date(ledger.optLong("modify_date")).toString());
+		mLedger = Common.Ledgers.get(position);
+		((TextView) findViewById(R.id.txtTitle)).setText(mLedger.optString("title"));
+		((TextView) findViewById(R.id.txtDescription)).setText(mLedger.optString("description"));
+		((TextView) findViewById(R.id.txtCreatedBy)).setText(mLedger.optString("creator"));
+		((TextView) findViewById(R.id.txtCreatedOn)).setText(new Date(mLedger.optLong("create_date")).toString());
+		((TextView) findViewById(R.id.txtModified)).setText(new Date(mLedger.optLong("modify_date")).toString());
 	}
 
 	@Override protected void onResume()
@@ -50,7 +51,7 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 		super.onResume();
 		
 		setViewsVisibility(false, true, false, false);
-		new GetLedgerAsync(this, "/" + ledger.optString("code") + "/catalog.json").execute();
+		new GetLedgerAsync(this, "/" + mLedger.optString("code") + "/catalog.json").execute();
     }
 
 	@Override public boolean onCreateOptionsMenu(Menu menu)
@@ -81,6 +82,7 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 		{
 			try
 			{
+				mEntries.clear();
 				JSONArray jArr = new JSONArray(result.Response);
 				int len = jArr.length();
 				if (len > 0)
@@ -115,6 +117,9 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
 		BeeLog.i1(TAG, "Item click position " + position);
+		Intent i = new Intent(this, ViewEntryActivity.class);
+		i.putExtra("entry", mEntries.get(position).toString());
+		startActivity(i);
 	}
 
 	public void onDescriptionClicked(View view)
@@ -124,7 +129,7 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 		{
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.txt_ledger_description);
-			CharSequence[] options = {ledger.optString("description")};
+			CharSequence[] options = {mLedger.optString("description")};
 			builder.setItems(options, null);
 			builder.setNeutralButton("OK", null);
 			builder.create().show();
@@ -134,7 +139,7 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 	public void onCreatorClicked(View view)
 	{
         Intent email = new Intent(Intent.ACTION_SEND);
-        email.putExtra(Intent.EXTRA_EMAIL, new String[]{ledger.optString("email")});
+        email.putExtra(Intent.EXTRA_EMAIL, new String[]{mLedger.optString("email")});
 		email.setType("html/text");
 		startActivity(Intent.createChooser(email, "Send via..."));
 	}
