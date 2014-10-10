@@ -9,6 +9,7 @@
     
     <string name="txt_no_ledgers">No ledgers have been added</string>
     <string name="txt_no_entries">No entries have been added</string>
+    <string name="txt_no_images">No images have been added</string>
     <string name="txt_no_cloud">You have not connected\nyour cloud storage provider</string>
     <string name="txt_my_ledgers">My Ledgers:</string>
     <string name="txt_wait_ledgers">Retrieving all ledgers&#8230;</string>
@@ -26,10 +27,14 @@
     <string name="txt_created_by">Created by:</string>
     <string name="txt_created_on">Created on:</string>
     <string name="txt_modified_on">Last modified:</string>
+    <string name="txt_number">Number:</string>
+    <string name="txt_amount">Amount:</string>
+    <string name="txt_doc_date">Document date:</string>
     
     <string name="btn_submit">Submit</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_new_entry">Add entry</string>
+    <string name="btn_new_image">Add image</string>
     
     <color name="text_brown_1">#4D2514</color>
     

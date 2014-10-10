@@ -13,7 +13,7 @@ import com.dropbox.client2.DropboxAPI.Entry;
 import com.dropbox.client2.DropboxAPI.ThumbFormat;
 import com.dropbox.client2.DropboxAPI.ThumbSize;
 
-public class GetThumbsAsync extends AsyncTask<Void, Long, Boolean>
+public class GetThumbsAsync extends AsyncTask<String, Long, Boolean>
 {
 	private final static String TAG = "PL-GetThumbs";
 	private WrapperActivity mActivity;
@@ -27,16 +27,16 @@ public class GetThumbsAsync extends AsyncTask<Void, Long, Boolean>
         mResult = new ApiResult();
     }
 
-    @Override protected Boolean doInBackground(Void... params)
+    @Override protected Boolean doInBackground(String... params)
     {
         try
         {
         	Entry entry = Common.DropboxApi.metadata(mPath, 1000, null, true, null);
         	for (Entry file : entry.contents)
         	{
-        		if (file.mimeType.startsWith("image/"))
+        		if (file.mimeType.startsWith("image/") && file.fileName().startsWith(params[0]))
         		{
-                    DropboxInputStream dis = Common.DropboxApi.getThumbnailStream(file.path, ThumbSize.ICON_32x32, ThumbFormat.JPEG);
+                    DropboxInputStream dis = Common.DropboxApi.getThumbnailStream(file.path, ThumbSize.ICON_256x256, ThumbFormat.JPEG);
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     dis.copyStreamToOutput(baos, null);
                     baos.close();
@@ -50,6 +50,7 @@ public class GetThumbsAsync extends AsyncTask<Void, Long, Boolean>
         catch (Exception e)
         {
         	BeeLog.w1(TAG, "Dropbox api exception: " + e.toString());
+        	mResult.Error = "Unable to obtain image thumbnails";
             return false;
         }
     }

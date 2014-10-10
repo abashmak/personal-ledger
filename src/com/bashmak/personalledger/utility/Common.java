@@ -25,6 +25,8 @@ public class Common
     public static DropboxAPI<AndroidAuthSession> DropboxApi;
     
     public static ArrayList<JSONObject> Ledgers = new ArrayList<JSONObject>();
+	public static ArrayList<JSONObject> Entries = new ArrayList<JSONObject>();
+	
 	public static String CreatorName = "Unknown";
 	public static String CreatorEmail = "unknown";
 

@@ -1,21 +1,28 @@
 package com.bashmak.personalledger.activity;
 
-import org.json.JSONException;
+import java.util.Date;
+
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.GridView;
+import android.widget.TextView;
 
 import com.bashmak.beeutils.BeeLog;
-import com.bashmak.beeutils.BeeToast;
+import com.bashmak.personalledger.ImageGridAdapter;
 import com.bashmak.personalledger.R;
 import com.bashmak.personalledger.network.ApiResult;
+import com.bashmak.personalledger.network.GetThumbsAsync;
+import com.bashmak.personalledger.utility.Common;
 
 public class ViewEntryActivity extends WrapperActivity
 {
 	private final String TAG = "PL-Entry";
+	private JSONObject mLedger;
 	private JSONObject mEntry;
 	
 	@Override protected void onCreate(Bundle savedInstanceState)
@@ -23,17 +30,14 @@ public class ViewEntryActivity extends WrapperActivity
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.view_entry);
-		String entry = getIntent().getExtras().getString("entry");
-		try
-		{
-			mEntry = new JSONObject(entry);
-		}
-		catch (JSONException e)
-		{
-			BeeLog.e1(TAG, "Exception parsing entry JSON: ", e);
-			BeeToast.showCenteredToastLong(this, "Unable to retrieve ledger entry\nContact app developer");
-			finish();
-		}
+		mLedger = Common.Ledgers.get(getIntent().getExtras().getInt("ledger_position"));
+		mEntry = Common.Entries.get(getIntent().getExtras().getInt("entry_position"));
+		((TextView) findViewById(R.id.txtNumber)).setText(mEntry.optString("number"));
+		((TextView) findViewById(R.id.txtDescription)).setText(mEntry.optString("description"));
+		((TextView) findViewById(R.id.txtAmount)).setText(mEntry.optString("amount"));
+		((TextView) findViewById(R.id.txtDocDate)).setText(mEntry.optString("doc_date"));
+		((TextView) findViewById(R.id.txtCreatedOn)).setText(new Date(mEntry.optLong("create_date")).toString());
+		((TextView) findViewById(R.id.txtModified)).setText(new Date(mEntry.optLong("modify_date")).toString());
 	}
 
 	@Override protected void onResume()
@@ -41,7 +45,7 @@ public class ViewEntryActivity extends WrapperActivity
 		super.onResume();
 		
 		setViewsVisibility(false, true, false, false);
-		//new GetLedgerAsync(this, "/" + ledger.optString("code") + "/catalog.json").execute();
+		new GetThumbsAsync(this, "/" + mLedger.optString("code")).execute(mEntry.optString("number"));
     }
 
 	@Override public boolean onCreateOptionsMenu(Menu menu)
@@ -63,29 +67,42 @@ public class ViewEntryActivity extends WrapperActivity
 		if (!result.Error.isEmpty())
 		{
 			setViewsVisibility(false, false, true, true);
+			BeeLog.i1(TAG, "Error retrieving thumbs: " + result.Error);
 		}
-		else if (result.Response.isEmpty())
+		else if (result.Thumbnails.isEmpty())
 		{
 			setViewsVisibility(false, false, true, true);
 		}
 		else
 		{
-			try
-			{
-			}
-			catch (Exception e)
-			{
-				BeeLog.e1(TAG, "Exception parsing catalog.json", e);
-				setViewsVisibility(false, false, true, true);
-			}
+			ImageGridAdapter adapter = new ImageGridAdapter(this, R.layout.grid_item_1, result.Thumbnails);
+			GridView gv = (GridView) findViewById(R.id.gridThumbs);
+			gv.setAdapter(adapter);
+			//lv.setOnItemClickListener(this);
+			//lv.setOnItemLongClickListener(this);
+			setViewsVisibility(true, false, false, true);
 		}
 	}
 
-	private void setViewsVisibility(boolean list, boolean progress, boolean text, boolean button)
+	public void onDescriptionClicked(View view)
 	{
-		findViewById(R.id.listEntries).setVisibility(list ? View.VISIBLE : View.GONE);
-		findViewById(R.id.progressEntries).setVisibility(progress ? View.VISIBLE : View.GONE);
-		findViewById(R.id.txtNoEntries).setVisibility(text ? View.VISIBLE : View.GONE);
-		findViewById(R.id.btnNewEntry).setVisibility(button ? View.VISIBLE : View.GONE);
+		TextView tv = (TextView) view;
+		if (tv.getLayout().getEllipsisCount(0) > 0)
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.txt_ledger_description);
+			CharSequence[] options = {mEntry.optString("description")};
+			builder.setItems(options, null);
+			builder.setNeutralButton("OK", null);
+			builder.create().show();
+		}
+	}
+
+	private void setViewsVisibility(boolean grid, boolean progress, boolean text, boolean button)
+	{
+		findViewById(R.id.gridThumbs).setVisibility(grid ? View.VISIBLE : View.GONE);
+		findViewById(R.id.progressThumbs).setVisibility(progress ? View.VISIBLE : View.GONE);
+		findViewById(R.id.txtNoThumbs).setVisibility(text ? View.VISIBLE : View.GONE);
+		findViewById(R.id.btnNewImage).setVisibility(button ? View.VISIBLE : View.GONE);
 	}
 }

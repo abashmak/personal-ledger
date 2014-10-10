@@ -10,21 +10,21 @@
     android:background="@drawable/background" >
     
     <TextView
-        android:id="@+id/txtLabelTitle"
+        android:id="@+id/txtLabelNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:text="@string/txt_ledger_title2"
+        android:text="@string/txt_number"
         android:textColor="@color/text_brown_1"
         android:textSize="16sp"
         android:textStyle="bold" />
     
     <TextView
-        android:id="@+id/txtTitle"
+        android:id="@+id/txtNumber"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/txtLabelTitle"
-        android:layout_alignLeft="@+id/txtModified"
+        android:layout_alignBaseline="@+id/txtLabelNumber"
+        android:layout_alignLeft="@+id/txtDocDate"
         android:textColor="#fff"
         android:textStyle="bold"
         android:textSize="14sp" />
@@ -34,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/txtLabelTitle"
+        android:layout_below="@+id/txtLabelNumber"
         android:textColor="@color/text_brown_1"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -45,7 +45,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/txtLabelDescription"
-        android:layout_alignLeft="@+id/txtModified"
+        android:layout_alignLeft="@+id/txtDocDate"
         android:maxLines="1"
         android:ellipsize="end"
         android:textColor="#fff"
@@ -55,7 +55,7 @@
         android:onClick="onDescriptionClicked" />
     
     <TextView
-        android:id="@+id/txtLabelCreatedBy"
+        android:id="@+id/txtLabelAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -63,28 +63,52 @@
         android:textColor="@color/text_brown_1"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:text="@string/txt_created_by" />
+        android:text="@string/txt_amount" />
     
     <TextView
-        android:id="@+id/txtCreatedBy"
+        android:id="@+id/txtAmount"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/txtLabelCreatedBy"
-        android:layout_alignLeft="@+id/txtModified"
+        android:layout_alignBaseline="@+id/txtLabelAmount"
+        android:layout_alignLeft="@+id/txtDocDate"
         android:maxLines="1"
         android:ellipsize="end"
         android:textColor="#fff"
         android:textStyle="bold"
         android:textSize="14sp"
-        android:clickable="true"
-        android:onClick="onCreatorClicked" />
+        android:clickable="true" />
+    
+    <TextView
+        android:id="@+id/txtLabelDocDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/txtLabelAmount"
+        android:textColor="@color/text_brown_1"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:text="@string/txt_doc_date" />
+    
+    <TextView
+        android:id="@+id/txtDocDate"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/txtLabelDocDate"
+        android:layout_alignBaseline="@+id/txtLabelDocDate"
+        android:layout_marginLeft="10dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textColor="#fff"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:clickable="true" />
     
     <TextView
         android:id="@+id/txtLabelCreatedOn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/txtLabelCreatedBy"
+        android:layout_below="@+id/txtLabelDocDate"
         android:textColor="@color/text_brown_1"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -95,7 +119,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/txtLabelCreatedOn"
-        android:layout_alignLeft="@+id/txtModified"
+        android:layout_alignLeft="@+id/txtDocDate"
         android:maxLines="1"
         android:ellipsize="end"
         android:textColor="#fff"
@@ -117,37 +141,37 @@
         android:id="@+id/txtModified"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/txtLabelModified"
         android:layout_alignBaseline="@+id/txtLabelModified"
-        android:layout_marginLeft="10dp"
+        android:layout_alignLeft="@+id/txtDocDate"
         android:maxLines="1"
         android:ellipsize="end"
         android:textColor="#fff"
         android:textStyle="bold"
         android:textSize="14sp" />
     	    
-    <ListView
-        android:id="@+id/listEntries"
+    <GridView
+        android:id="@+id/gridThumbs"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="10dp"
         android:layout_below="@+id/txtLabelModified"
-        android:layout_above="@+id/btnNewEntry"
-        android:background="@drawable/listview_bg"
-        android:divider="#888"
-        android:dividerHeight="2dp" />
+        android:layout_above="@+id/btnNewImage"
+        android:numColumns="2"
+        android:verticalSpacing="7dp"
+        android:horizontalSpacing="7dp"
+        android:stretchMode="columnWidth" />
 
 	<ProgressBar
-		android:id="@+id/progressEntries"
+		android:id="@+id/progressThumbs"
 		style="?android:attr/progressBarStyleLarge"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
     	    
     <TextView
-        android:id="@+id/txtNoEntries"
+        android:id="@+id/txtNoThumbs"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -155,14 +179,14 @@
         android:textColor="@color/text_brown_1"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:text="@string/txt_no_entries" />
+        android:text="@string/txt_no_images" />
 	
     <Button
-        android:id="@+id/btnNewEntry"
+        android:id="@+id/btnNewImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="@string/btn_new_entry" />
+        android:text="@string/btn_new_image" />
 
 </RelativeLayout>

@@ -1,6 +1,5 @@
 package com.bashmak.personalledger.activity;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.json.JSONArray;
@@ -29,16 +28,15 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 {
 	private final String TAG = "PL-Ledger";
 	private JSONObject mLedger;
-	private EntryListAdapter mAdapter;
-	private ArrayList<JSONObject> mEntries = new ArrayList<JSONObject>();
+	private int mLedgerPosition;
 	
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.view_ledger);
-		int position = getIntent().getExtras().getInt("position");
-		mLedger = Common.Ledgers.get(position);
+		mLedgerPosition = getIntent().getExtras().getInt("position");
+		mLedger = Common.Ledgers.get(mLedgerPosition);
 		((TextView) findViewById(R.id.txtTitle)).setText(mLedger.optString("title"));
 		((TextView) findViewById(R.id.txtDescription)).setText(mLedger.optString("description"));
 		((TextView) findViewById(R.id.txtCreatedBy)).setText(mLedger.optString("creator"));
@@ -82,19 +80,18 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 		{
 			try
 			{
-				mEntries.clear();
+				Common.Entries.clear();
 				JSONArray jArr = new JSONArray(result.Response);
 				int len = jArr.length();
 				if (len > 0)
 				{
-					ArrayList<JSONObject> entries = new ArrayList<JSONObject>();
 					for (int i = 0; i < len; i++)
 					{
-						entries.add((JSONObject) jArr.get(i));
+						Common.Entries.add((JSONObject) jArr.get(i));
 					}
-					mAdapter = new EntryListAdapter(this, R.layout.list_item_1, entries);
+					EntryListAdapter adapter = new EntryListAdapter(this, R.layout.list_item_1, Common.Entries);
 					ListView lv = (ListView) findViewById(R.id.listEntries);
-					lv.setAdapter(mAdapter);
+					lv.setAdapter(adapter);
 					lv.setOnItemClickListener(this);
 					lv.setOnItemLongClickListener(this);
 					setViewsVisibility(true, false, false, true);
@@ -118,7 +115,8 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 	{
 		BeeLog.i1(TAG, "Item click position " + position);
 		Intent i = new Intent(this, ViewEntryActivity.class);
-		i.putExtra("entry", mEntries.get(position).toString());
+		i.putExtra("ledger_position", mLedgerPosition);
+		i.putExtra("entry_position", position);
 		startActivity(i);
 	}
 
