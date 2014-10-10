@@ -1,0 +1,80 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="20dp"
+    android:layout_marginBottom="15dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp" >
+
+    <EditText
+        android:id="@+id/editTitle"
+        android:inputType="textCapCharacters"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/txtTitle"
+        android:textSize="14sp" />
+    
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_alignBaseline="@+id/editTitle"
+        android:text="@string/txt_ledger_title"
+        android:textColor="#bbb"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/editDescription"
+        android:inputType="textMultiLine"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@+id/txtDescription"
+        android:layout_below="@+id/editTitle"
+        android:layout_alignRight="@+id/editTitle"
+        android:lines="3"
+        android:minLines="2"
+        android:maxLines="4"
+        android:textSize="14sp" />
+    
+    <TextView
+        android:id="@+id/txtDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_alignBaseline="@+id/editDescription"
+        android:text="@string/txt_ledger_description"
+        android:textColor="#bbb"
+        android:textSize="16sp" />
+    
+    <LinearLayout
+        android:id="@+id/linBtnContainer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/editDescription"
+        android:orientation="horizontal" >
+    
+    	<Button
+        	android:id="@+id/btnCancel"
+        	android:layout_width="0dp"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:layout_marginRight="5dp"
+        	android:text="@string/btn_cancel"
+        	android:onClick="onCancelClicked" />
+    
+    	<Button
+        	android:id="@+id/btnSubmit"
+        	android:layout_width="0dp"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+        	android:layout_marginLeft="5dp"
+        	android:text="@string/btn_submit"
+        	android:onClick="onSubmitClicked" />
+    	
+    </LinearLayout>
+        
+    
+</RelativeLayout>
