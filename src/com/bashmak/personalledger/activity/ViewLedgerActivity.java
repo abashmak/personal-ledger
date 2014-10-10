@@ -113,7 +113,6 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 
 	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
-		BeeLog.i1(TAG, "Item click position " + position);
 		Intent i = new Intent(this, ViewEntryActivity.class);
 		i.putExtra("ledger_position", mLedgerPosition);
 		i.putExtra("entry_position", position);
@@ -132,6 +131,13 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 			builder.setNeutralButton("OK", null);
 			builder.create().show();
 		}
+	}
+
+	public void onNewEntryClicked(View view)
+	{
+		Intent i = new Intent(this, AddEntryActivity.class);
+		i.putExtra("ledger_position", mLedgerPosition);
+		startActivity(i);
 	}
 	
 	public void onCreatorClicked(View view)

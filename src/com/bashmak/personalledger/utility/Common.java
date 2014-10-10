@@ -90,6 +90,28 @@ public class Common
 			return "";
 		}
     }
+
+    public static String addEntry(String description, String amount, String docDate)
+    {
+		JSONObject jObj = new JSONObject();
+		try
+		{
+			String number = getNextNumber();
+			jObj.putOpt("number", number);
+			jObj.putOpt("description", description);
+			jObj.putOpt("amount", amount);
+			jObj.putOpt("doc_date", docDate);
+			jObj.putOpt("create_date", System.currentTimeMillis());
+			jObj.putOpt("modify_date", System.currentTimeMillis());
+			Entries.add(jObj);
+			return number;
+		}
+		catch (JSONException e)
+		{
+			BeeLog.e1("Exception adding new entry", e);
+			return "";
+		}
+    }
     
     public static String genHtmlLedgers()
     {
@@ -134,5 +156,37 @@ public class Common
     		}
     	}
     	return title + "_" + num;
+    }
+
+    private static String getNextNumber()
+    {
+    	int num = 1;
+    	for (JSONObject entry : Entries)
+    	{
+    		try
+    		{
+    			int number = Integer.parseInt(entry.optString("number"));
+    			if (number >= num)
+    			{
+    				num++;
+    			}
+    		}
+    		catch (Exception e)
+    		{
+    			BeeLog.e1("Exception parsing entry number", e);
+    		}
+    	}
+    	if (num < 10)
+    	{
+    		return "00" + num;
+    	}
+    	else if (num < 100)
+    	{
+    		return "0" + num;
+    	}
+    	else
+    	{
+    		return "" + num;
+    	}
     }
 }
