@@ -1,5 +1,6 @@
 package com.bashmak.personalledger.activity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.http.message.BasicNameValuePair;
@@ -9,6 +10,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -97,14 +100,39 @@ public class AddEntryActivity extends WrapperActivity
         {
             String imgName = mEntryNum + mImageIndex++;
             String imgPath = getPathFromUri(mImageUri);
-            BeeLog.i1("DEBUG", imgPath);
             Common.Images.add(new BasicNameValuePair(imgName, imgPath));
             ArrayList<Bitmap> thumbs = new ArrayList<Bitmap>();
             for (BasicNameValuePair nvp : Common.Images)
             {
-        		Bitmap bitmap = BeeGraphics.decodeFile(nvp.getValue());
-        		bitmap = Bitmap.createScaledBitmap(bitmap, 200, 200, false);
-        		thumbs.add(bitmap);
+                Matrix matrix = new Matrix();
+                ExifInterface ei;
+    			try
+    			{
+    				ei = new ExifInterface(nvp.getValue());
+    	            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+    	            switch(orientation)
+    	            {
+    	            case ExifInterface.ORIENTATION_ROTATE_90:
+    	                matrix.postRotate(90);
+    	                break;
+    	            case ExifInterface.ORIENTATION_ROTATE_180:
+    	                matrix.postRotate(180);
+    	                break;
+    	            case ExifInterface.ORIENTATION_ROTATE_270:
+    	                matrix.postRotate(270);
+    	                break;
+    	            }
+    			}
+    			catch (IOException e)
+    			{
+    				e.printStackTrace();
+    			}
+        		Bitmap bitmapFull = BeeGraphics.decodeFile(nvp.getValue());
+        		Bitmap bitmapScale = Bitmap.createScaledBitmap(bitmapFull, 200, 200, false);
+        		bitmapFull.recycle();
+                Bitmap bitmapRotate = Bitmap.createBitmap(bitmapScale, 0, 0, bitmapScale.getWidth(), bitmapScale.getHeight(), matrix, true);
+                bitmapScale.recycle();
+        		thumbs.add(bitmapRotate);
             }
 			ImageGridAdapter adapter = new ImageGridAdapter(this, R.layout.grid_item_1, thumbs);
 			GridView gv = (GridView) findViewById(R.id.gridThumbs);
