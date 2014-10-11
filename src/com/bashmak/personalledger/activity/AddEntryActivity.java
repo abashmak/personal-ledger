@@ -1,11 +1,14 @@
 package com.bashmak.personalledger.activity;
 
+import java.util.ArrayList;
+
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,10 +17,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.GridView;
 
+import com.bashmak.beeutils.BeeGraphics;
 import com.bashmak.beeutils.BeeLog;
 import com.bashmak.beeutils.BeeToast;
+import com.bashmak.personalledger.ImageGridAdapter;
 import com.bashmak.personalledger.R;
-import com.bashmak.personalledger.ThumbGridAdapter;
 import com.bashmak.personalledger.network.ApiResult;
 import com.bashmak.personalledger.utility.Common;
 
@@ -33,7 +37,6 @@ public class AddEntryActivity extends WrapperActivity
 		super.onCreate(savedInstanceState);
 		//mLedger = Common.Ledgers.get(getIntent().getExtras().getInt("ledger_position"));
 		setContentView(R.layout.view_add_entry);
-		mImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
 		mEntryNum = getNextNumber();
 		Common.Images.clear();
 	}
@@ -61,6 +64,12 @@ public class AddEntryActivity extends WrapperActivity
 	{
 		EditText et = (EditText) findViewById(R.id.editDescription);
 		String description = et.getText().toString().trim();
+		if (description.isEmpty())
+		{
+			BeeToast.showCenteredToastShort(this, "Description is required!");
+			et.requestFocus();
+			return;
+		}
 		
 		et = (EditText) findViewById(R.id.editAmount);
 		String amount = et.getText().toString().trim();
@@ -70,12 +79,13 @@ public class AddEntryActivity extends WrapperActivity
 		
 		Common.addEntry(mEntryNum, description, amount, docDate);
 		hideKeyboard(view);
-		setProgressView(getString(R.string.txt_wait_create));
+		setProgressView(getString(R.string.txt_wait_create_entry));
         //new UpdateLegersAsync(this, "/").execute();
 	}
 
 	public void onNewImageClicked(View view)
 	{
+		mImageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
     	Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     	intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
     	startActivityForResult(intent, 0);
@@ -87,9 +97,16 @@ public class AddEntryActivity extends WrapperActivity
         {
             String imgName = mEntryNum + mImageIndex++;
             String imgPath = getPathFromUri(mImageUri);
-            for (int i = 0; i < 20; i++)
+            BeeLog.i1("DEBUG", imgPath);
             Common.Images.add(new BasicNameValuePair(imgName, imgPath));
-			ThumbGridAdapter adapter = new ThumbGridAdapter(this, R.layout.grid_item_1, Common.Images);
+            ArrayList<Bitmap> thumbs = new ArrayList<Bitmap>();
+            for (BasicNameValuePair nvp : Common.Images)
+            {
+        		Bitmap bitmap = BeeGraphics.decodeFile(nvp.getValue());
+        		bitmap = Bitmap.createScaledBitmap(bitmap, 200, 200, false);
+        		thumbs.add(bitmap);
+            }
+			ImageGridAdapter adapter = new ImageGridAdapter(this, R.layout.grid_item_1, thumbs);
 			GridView gv = (GridView) findViewById(R.id.gridThumbs);
 			gv.setAdapter(adapter);
         }
@@ -107,6 +124,7 @@ public class AddEntryActivity extends WrapperActivity
 			{
 				path = cursor.getString(data_column);
 			}
+			cursor.close();
 		}
 		return path;
     }

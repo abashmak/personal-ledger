@@ -14,8 +14,9 @@
     <string name="txt_my_ledgers">My Ledgers:</string>
     <string name="txt_wait_ledgers">Retrieving all ledgers&#8230;</string>
     <string name="txt_wait_ledger">Retrieving ledger&#8230;</string>
-    <string name="txt_wait_create">Please wait while your\nledger is created and uploaded&#8230;</string>
-    <string name="txt_wait_delete">Please wait\nledger deletion in progress&#8230;</string>
+    <string name="txt_wait_create_ledger">Uploading new ledger&#8230;</string>
+    <string name="txt_wait_create_entry">Uploading new entry&#8230;</string>
+    <string name="txt_wait_delete_ledger">Ledger deletion in progress&#8230;</string>
     <string name="txt_ledger_title">Title</string>
     <string name="txt_ledger_title2">Title:</string>
     <string name="txt_ledger_description">Description</string>

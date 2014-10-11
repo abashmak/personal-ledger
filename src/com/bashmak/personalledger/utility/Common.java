@@ -3,7 +3,7 @@ package com.bashmak.personalledger.utility;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,7 +27,7 @@ public class Common
     
     public static ArrayList<JSONObject> Ledgers = new ArrayList<JSONObject>();
 	public static ArrayList<JSONObject> Entries = new ArrayList<JSONObject>();
-	public static ArrayList<NameValuePair> Images = new ArrayList<NameValuePair>();
+	public static ArrayList<BasicNameValuePair> Images = new ArrayList<BasicNameValuePair>();
 	
 	public static String CreatorName = "Unknown";
 	public static String CreatorEmail = "unknown";

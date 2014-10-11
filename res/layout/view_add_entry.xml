@@ -85,7 +85,7 @@
         android:layout_marginBottom="10dp"
         android:layout_below="@+id/editDocDate"
         android:layout_above="@+id/btnNewImage"
-        android:numColumns="4"
+        android:numColumns="3"
         android:verticalSpacing="7dp"
         android:horizontalSpacing="7dp"
         android:stretchMode="columnWidth" />

@@ -69,7 +69,7 @@ public class AddLedgerActivity extends WrapperActivity
 		Common.addLedger(mTitle, description);
 
 		hideKeyboard(view);
-		setProgressView(getString(R.string.txt_wait_create));
+		setProgressView(getString(R.string.txt_wait_create_ledger));
         new UpdateLegersAsync(this, "/").execute();
 	}
 }

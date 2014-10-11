@@ -253,7 +253,7 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 						{
 							JSONObject ledger = mAdapter.getItem(position);
 							Common.Ledgers.remove(position);
-							setProgressView(getString(R.string.txt_wait_delete));
+							setProgressView(getString(R.string.txt_wait_delete_ledger));
 							new DeleteLedgerAsync(MainActivity.this, "/").execute(ledger.optString("code"));
 						}
 					});
