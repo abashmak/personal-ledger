@@ -76,15 +76,19 @@
         android:textColor="#bbb"
         android:textSize="16sp" />
     
-    <TextView
-        android:id="@+id/txtImageList"
+    <GridView
+        android:id="@+id/gridThumbs"
+        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
         android:layout_below="@+id/editDocDate"
-        android:gravity="center_horizontal"
-        android:textSize="14sp" />
+        android:layout_above="@+id/btnNewImage"
+        android:numColumns="4"
+        android:verticalSpacing="7dp"
+        android:horizontalSpacing="7dp"
+        android:stretchMode="columnWidth" />
     
     <Button
         android:id="@+id/btnNewImage"
@@ -92,8 +96,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
+        android:layout_above="@+id/linBtnContainer"
         android:gravity="center"
-        android:layout_below="@+id/txtImageList"
         android:text="@string/btn_new_image"
         android:onClick="onNewImageClicked" />
         
@@ -102,7 +106,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:layout_below="@+id/btnNewImage"
+        android:layout_alignParentBottom="true"
         android:orientation="horizontal" >
     
     	<Button

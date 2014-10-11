@@ -3,6 +3,7 @@ package com.bashmak.personalledger.utility;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.apache.http.NameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +27,7 @@ public class Common
     
     public static ArrayList<JSONObject> Ledgers = new ArrayList<JSONObject>();
 	public static ArrayList<JSONObject> Entries = new ArrayList<JSONObject>();
+	public static ArrayList<NameValuePair> Images = new ArrayList<NameValuePair>();
 	
 	public static String CreatorName = "Unknown";
 	public static String CreatorEmail = "unknown";
@@ -91,12 +93,11 @@ public class Common
 		}
     }
 
-    public static String addEntry(String description, String amount, String docDate)
+    public static String addEntry(String number, String description, String amount, String docDate)
     {
 		JSONObject jObj = new JSONObject();
 		try
 		{
-			String number = getNextNumber();
 			jObj.putOpt("number", number);
 			jObj.putOpt("description", description);
 			jObj.putOpt("amount", amount);
@@ -156,37 +157,5 @@ public class Common
     		}
     	}
     	return title + "_" + num;
-    }
-
-    private static String getNextNumber()
-    {
-    	int num = 1;
-    	for (JSONObject entry : Entries)
-    	{
-    		try
-    		{
-    			int number = Integer.parseInt(entry.optString("number"));
-    			if (number >= num)
-    			{
-    				num++;
-    			}
-    		}
-    		catch (Exception e)
-    		{
-    			BeeLog.e1("Exception parsing entry number", e);
-    		}
-    	}
-    	if (num < 10)
-    	{
-    		return "00" + num;
-    	}
-    	else if (num < 100)
-    	{
-    		return "0" + num;
-    	}
-    	else
-    	{
-    		return "" + num;
-    	}
     }
 }
