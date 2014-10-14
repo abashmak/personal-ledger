@@ -10,14 +10,14 @@ import com.bashmak.beeutils.BeeLog;
 import com.bashmak.personalledger.activity.WrapperActivity;
 import com.bashmak.personalledger.utility.Common;
 
-public class UpdateLegersAsync extends AsyncTask<Void, Long, Boolean>
+public class UpdateLedgersAsync extends AsyncTask<Void, Long, Boolean>
 {
 	private final static String TAG = "PL-UpdateLedgers";
 	private WrapperActivity mActivity;
     private String mPath;
     private ApiResult mResult;
 
-    public UpdateLegersAsync(WrapperActivity activity, String dropboxPath)
+    public UpdateLedgersAsync(WrapperActivity activity, String dropboxPath)
     {
     	mActivity = activity;
         mPath = dropboxPath;

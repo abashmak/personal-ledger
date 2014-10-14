@@ -31,9 +31,12 @@
     <string name="txt_number">Number:</string>
     <string name="txt_amount">Amount:</string>
     <string name="txt_doc_date">Document date:</string>
+    <string name="txt_confirm_entry_title">Confirm submission</string>
+    <string name="txt_confirm_entry_msg">You have not added any images!\nProceed with entry submission?</string>
     
     <string name="btn_submit">Submit</string>
     <string name="btn_cancel">Cancel</string>
+    <string name="btn_ok">OK</string>
     <string name="btn_new_entry">Add entry</string>
     <string name="btn_new_image">Add image</string>
     

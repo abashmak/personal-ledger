@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -104,6 +105,12 @@ public class Common
 			jObj.putOpt("doc_date", docDate);
 			jObj.putOpt("create_date", System.currentTimeMillis());
 			jObj.putOpt("modify_date", System.currentTimeMillis());
+			JSONArray images = new JSONArray();
+			for (BasicNameValuePair image : Common.Images)
+			{
+				images.put(image.getName());
+			}
+			jObj.putOpt("images", images);
 			Entries.add(jObj);
 			return number;
 		}
@@ -119,7 +126,7 @@ public class Common
     	StringBuilder html = new StringBuilder();
     	String style = "<style>table, th, td {border: 1px solid black; border-collapse: collapse;} th, td {padding: 5px; text-align: left;}</style>";
     	html.append("<!DOCTYPE html><html><head><title>My Ledgers</title>" + style + "</head><body><table style=\"width:100%\">");
-    	html.append("<tr><th>Title</th><th>Description</th><th>Created By</th><th>Created On</th><th>Modified On:</th></tr>");
+    	html.append("<tr><th>Title</th><th>Description</th><th>Created By</th><th>Created On</th><th>Modified On</th></tr>");
     	for (JSONObject ledger : Ledgers)
     	{
     		html.append("<tr>");
@@ -135,14 +142,27 @@ public class Common
     
     public static String genHtmlLedger(JSONObject ledger)
     {
-    	StringBuilder html = new StringBuilder("<!DOCTYPE html><html><head><title>Ledger</title></head><body>");
+    	String style = "<style>table, th, td {border: 1px solid black; border-collapse: collapse;} th, td {padding: 5px; text-align: left;}</style>";
+    	StringBuilder html = new StringBuilder("<!DOCTYPE html><html><head><title>Ledger</title>" + style + "</head><body>");
     	html.append("<h1>" + ledger.optString("title") + "</h1>");
-    	html.append("<label><b>Description:</b><span>" + ledger.optString("description") + "</span></label><br>");
-    	html.append("<label><b>Created by:</b><span>" + ledger.optString("creator") + "</span></label><br>");
-    	html.append("<label><b>Email:</b><span>" + ledger.optString("email") + "</span></label><br>");
-    	html.append("<label><b>Created on:</b><span>" + new Date(ledger.optLong("create_date")) + "</span></label><br>");
-    	html.append("<label><b>Modified on: </b><span>" + new Date(ledger.optLong("modify_date")) + "</span></label><br>");
-    	return html.append("</body></html>").toString();
+    	html.append("<label><b>Description: </b><span>" + ledger.optString("description") + "</span></label><br>");
+    	html.append("<label><b>Created by: </b><span>" + ledger.optString("creator") + "</span></label><br>");
+    	html.append("<label><b>Email: </b><span>" + ledger.optString("email") + "</span></label><br>");
+    	html.append("<label><b>Created on: </b><span>" + new Date(ledger.optLong("create_date")) + "</span></label><br>");
+    	html.append("<label><b>Modified on: </b><span>" + new Date(ledger.optLong("modify_date")) + "</span></label><br><br>");
+    	html.append("<table style=\"width:100%\"><tr><th>Number</th><th>Description</th><th>Amount</th><th>Document Date</th><th>Created On</th><th>Modified On</th></tr>");
+    	for (JSONObject entry : Entries)
+    	{
+    		html.append("<tr>");
+    		html.append("<td><a href=\"" + entry.optString("number") + ".html\">" + entry.optString("number") + "</a></td>");
+    		html.append("<td>" + entry.optString("description") + "</td>");
+    		html.append("<td>" + entry.optString("amount") + "</td>");
+    		html.append("<td>" + entry.optString("doc_date") + "</td>");
+    		html.append("<td>" + new Date(entry.optLong("create_date")) + "</td>");
+    		html.append("<td>" + new Date(entry.optLong("modify_date")) + "</td>");
+    		html.append("</tr>");
+    	}
+    	return html.append("</table></body></html>").toString();
     }
     
     private static String genUniqueCode(String title)

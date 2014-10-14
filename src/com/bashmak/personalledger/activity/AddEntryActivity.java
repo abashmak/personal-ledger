@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -26,11 +29,12 @@ import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.ImageGridAdapter;
 import com.bashmak.personalledger.R;
 import com.bashmak.personalledger.network.ApiResult;
+import com.bashmak.personalledger.network.UpdateLegerAsync;
 import com.bashmak.personalledger.utility.Common;
 
 public class AddEntryActivity extends WrapperActivity
 {
-	//private JSONObject mLedger;
+	private JSONObject mLedger;
 	private Uri mImageUri;
 	private char mImageIndex = 'a';
 	private String mEntryNum;
@@ -38,7 +42,7 @@ public class AddEntryActivity extends WrapperActivity
 	@Override public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		//mLedger = Common.Ledgers.get(getIntent().getExtras().getInt("ledger_position"));
+		mLedger = Common.Ledgers.get(getIntent().getExtras().getInt("ledger_position"));
 		setContentView(R.layout.view_add_entry);
 		mEntryNum = getNextNumber();
 		Common.Images.clear();
@@ -65,8 +69,9 @@ public class AddEntryActivity extends WrapperActivity
 	
 	public void onSubmitClicked(View view)
 	{
+		hideKeyboard(view);
 		EditText et = (EditText) findViewById(R.id.editDescription);
-		String description = et.getText().toString().trim();
+		final String description = et.getText().toString().trim();
 		if (description.isEmpty())
 		{
 			BeeToast.showCenteredToastShort(this, "Description is required!");
@@ -75,15 +80,34 @@ public class AddEntryActivity extends WrapperActivity
 		}
 		
 		et = (EditText) findViewById(R.id.editAmount);
-		String amount = et.getText().toString().trim();
+		final String amount = et.getText().toString().trim();
 		
 		et = (EditText) findViewById(R.id.editDocDate);
-		String docDate = et.getText().toString().trim();
+		final String docDate = et.getText().toString().trim();
 		
-		Common.addEntry(mEntryNum, description, amount, docDate);
-		hideKeyboard(view);
-		setProgressView(getString(R.string.txt_wait_create_entry));
-        //new UpdateLegersAsync(this, "/").execute();
+		if (Common.Images.isEmpty())
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.txt_confirm_entry_title);
+			builder.setMessage(R.string.txt_confirm_entry_msg);
+			builder.setPositiveButton(R.string.btn_ok, new OnClickListener()
+			{
+				@Override public void onClick(DialogInterface dialog, int which)
+				{
+					setProgressView(getString(R.string.txt_wait_create_entry));
+					Common.addEntry(mEntryNum, description, amount, docDate);
+			        new UpdateLegerAsync(AddEntryActivity.this, "/" + mLedger.optString("code") + "/").execute(mLedger);
+				}
+			});
+			builder.setNegativeButton(R.string.btn_cancel, null);
+			builder.create().show();
+		}
+		else
+		{
+			setProgressView(getString(R.string.txt_wait_create_entry));
+			Common.addEntry(mEntryNum, description, amount, docDate);
+	        new UpdateLegerAsync(AddEntryActivity.this, "/" + mLedger.optString("code") + "/").execute(mLedger);
+		}
 	}
 
 	public void onNewImageClicked(View view)
@@ -128,7 +152,8 @@ public class AddEntryActivity extends WrapperActivity
     				e.printStackTrace();
     			}
         		Bitmap bitmapFull = BeeGraphics.decodeFile(nvp.getValue());
-        		Bitmap bitmapScale = Bitmap.createScaledBitmap(bitmapFull, 200, 200, false);
+        		int newHeight = (int) Math.round(bitmapFull.getHeight() * 200.0 / bitmapFull.getWidth());
+        		Bitmap bitmapScale = Bitmap.createScaledBitmap(bitmapFull, 200, newHeight, false);
         		bitmapFull.recycle();
                 Bitmap bitmapRotate = Bitmap.createBitmap(bitmapScale, 0, 0, bitmapScale.getWidth(), bitmapScale.getHeight(), matrix, true);
                 bitmapScale.recycle();

@@ -126,8 +126,7 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 		{
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.txt_ledger_description);
-			CharSequence[] options = {mLedger.optString("description")};
-			builder.setItems(options, null);
+			builder.setMessage(mLedger.optString("description"));
 			builder.setNeutralButton("OK", null);
 			builder.create().show();
 		}

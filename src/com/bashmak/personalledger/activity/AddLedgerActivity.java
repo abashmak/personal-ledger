@@ -7,7 +7,7 @@ import android.widget.EditText;
 import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.R;
 import com.bashmak.personalledger.network.ApiResult;
-import com.bashmak.personalledger.network.UpdateLegersAsync;
+import com.bashmak.personalledger.network.UpdateLedgersAsync;
 import com.bashmak.personalledger.utility.Common;
 
 public class AddLedgerActivity extends WrapperActivity
@@ -70,6 +70,6 @@ public class AddLedgerActivity extends WrapperActivity
 
 		hideKeyboard(view);
 		setProgressView(getString(R.string.txt_wait_create_ledger));
-        new UpdateLegersAsync(this, "/").execute();
+        new UpdateLedgersAsync(this, "/").execute();
 	}
 }

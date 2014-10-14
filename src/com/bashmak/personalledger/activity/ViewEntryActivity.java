@@ -91,8 +91,7 @@ public class ViewEntryActivity extends WrapperActivity
 		{
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.txt_ledger_description);
-			CharSequence[] options = {mEntry.optString("description")};
-			builder.setItems(options, null);
+			builder.setMessage(mEntry.optString("description"));
 			builder.setNeutralButton("OK", null);
 			builder.create().show();
 		}
