@@ -54,7 +54,7 @@ public class UpdateLedgersAsync extends AsyncTask<Void, Long, Boolean>
 	        	String code = newLedger.optString("code");
 	        	Common.DropboxApi.createFolder(mPath + code);
 	        	
-	        	// Create ledger.html for the newly added ledger
+	        	// Create index.html for the newly added ledger
 	        	bytes = Common.genHtmlLedger(newLedger).getBytes("UTF-8");
 	        	bais = new ByteArrayInputStream(bytes);
 	        	Common.DropboxApi.putFileOverwrite(mPath + "/" + code + "/index.html", bais, bytes.length, null);

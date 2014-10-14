@@ -29,7 +29,7 @@ import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.ImageGridAdapter;
 import com.bashmak.personalledger.R;
 import com.bashmak.personalledger.network.ApiResult;
-import com.bashmak.personalledger.network.UpdateLegerAsync;
+import com.bashmak.personalledger.network.UpdateLedgerAsync;
 import com.bashmak.personalledger.utility.Common;
 
 public class AddEntryActivity extends WrapperActivity
@@ -96,7 +96,7 @@ public class AddEntryActivity extends WrapperActivity
 				{
 					setProgressView(getString(R.string.txt_wait_create_entry));
 					Common.addEntry(mEntryNum, description, amount, docDate);
-			        new UpdateLegerAsync(AddEntryActivity.this, "/" + mLedger.optString("code") + "/").execute(mLedger);
+			        new UpdateLedgerAsync(AddEntryActivity.this, "/" + mLedger.optString("code") + "/").execute(mLedger);
 				}
 			});
 			builder.setNegativeButton(R.string.btn_cancel, null);
@@ -106,7 +106,7 @@ public class AddEntryActivity extends WrapperActivity
 		{
 			setProgressView(getString(R.string.txt_wait_create_entry));
 			Common.addEntry(mEntryNum, description, amount, docDate);
-	        new UpdateLegerAsync(AddEntryActivity.this, "/" + mLedger.optString("code") + "/").execute(mLedger);
+	        new UpdateLedgerAsync(AddEntryActivity.this, "/" + mLedger.optString("code") + "/").execute(mLedger);
 		}
 	}
 
@@ -122,8 +122,8 @@ public class AddEntryActivity extends WrapperActivity
     {
         if (resultCode == RESULT_OK)
         {
-            String imgName = mEntryNum + mImageIndex++;
             String imgPath = getPathFromUri(mImageUri);
+            String imgName = mEntryNum + mImageIndex++ + imgPath.substring(imgPath.lastIndexOf('.'));
             Common.Images.add(new BasicNameValuePair(imgName, imgPath));
             ArrayList<Bitmap> thumbs = new ArrayList<Bitmap>();
             for (BasicNameValuePair nvp : Common.Images)

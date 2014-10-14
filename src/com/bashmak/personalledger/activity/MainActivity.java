@@ -21,7 +21,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bashmak.beeutils.BeeLog;
-import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.LedgerListAdapter;
 import com.bashmak.personalledger.R;
 import com.bashmak.personalledger.network.ApiResult;
@@ -164,7 +163,7 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 		}
 		else if (result.Response.equals("delete success"))
 		{
-			BeeToast.showCenteredToastShort(this, "Successfully deleted ledger");
+			//BeeToast.showCenteredToastShort(this, "Successfully deleted ledger");
 		}
 		else if (result.Response.isEmpty())
 		{
@@ -178,9 +177,16 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 			{
 				JSONArray jArr = new JSONArray(result.Response);
 				int len = jArr.length();
-				for (int i = 0; i < len; i++)
+				if (len > 0)
 				{
-					Common.Ledgers.add((JSONObject) jArr.get(i));
+					for (int i = 0; i < len; i++)
+					{
+						Common.Ledgers.add((JSONObject) jArr.get(i));
+					}
+				}
+				else
+				{
+					mMessage = getString(R.string.txt_no_ledgers);
 				}
 			}
 			catch (Exception e)
@@ -230,7 +236,7 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
 
 	private void showContextMenu(final int position)
     {
-		CharSequence[] options = {getString(R.string.txt_view_ledger), getString(R.string.txt_delete_ledger)};
+		CharSequence[] options = {getString(R.string.txt_view), getString(R.string.txt_delete)};
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.txt_ledger_actions);
 		builder.setItems(options, new DialogInterface.OnClickListener()
@@ -265,6 +271,6 @@ public class MainActivity extends WrapperActivity implements OnItemClickListener
     		   }
     	   }
        });
-       builder.create().show();
+		builder.create().show();
     }
 }

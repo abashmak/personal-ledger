@@ -13,14 +13,14 @@ import com.bashmak.beeutils.BeeLog;
 import com.bashmak.personalledger.activity.WrapperActivity;
 import com.bashmak.personalledger.utility.Common;
 
-public class UpdateLegerAsync extends AsyncTask<JSONObject, Long, Boolean>
+public class UpdateLedgerAsync extends AsyncTask<JSONObject, Long, Boolean>
 {
 	private final static String TAG = "PL-UpdateLedger";
 	private WrapperActivity mActivity;
     private String mPath;
     private ApiResult mResult;
 
-    public UpdateLegerAsync(WrapperActivity activity, String dropboxPath)
+    public UpdateLedgerAsync(WrapperActivity activity, String dropboxPath)
     {
     	mActivity = activity;
         mPath = dropboxPath;
@@ -46,7 +46,7 @@ public class UpdateLegerAsync extends AsyncTask<JSONObject, Long, Boolean>
 	        	Common.DropboxApi.putFileOverwrite(mPath + "catalog.json", bais, bytes.length, null);
 	        	bais.close();
         	
-	        	// Recreate ledger.html
+	        	// Recreate index.html
 	        	bytes = Common.genHtmlLedger(params[0]).getBytes("UTF-8");
 	        	bais = new ByteArrayInputStream(bytes);
 	        	Common.DropboxApi.putFileOverwrite(mPath + "index.html", bais, bytes.length, null);
@@ -56,9 +56,8 @@ public class UpdateLegerAsync extends AsyncTask<JSONObject, Long, Boolean>
 	        	for (BasicNameValuePair image : Common.Images)
 	        	{
 	        		File file = new File(image.getValue());
-	        		String extension = file.getName().substring(file.getName().lastIndexOf('.'));
 	                FileInputStream fis = new FileInputStream(file);
-	                String path = mPath + image.getName() + extension;
+	                String path = mPath + image.getName();
 	                Common.DropboxApi.putFileOverwrite(path, fis, file.length(), null);
 	                fis.close();
 	        	}

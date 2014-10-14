@@ -65,10 +65,6 @@ public class DeleteLedgerAsync extends AsyncTask<String, Long, Boolean>
         {
         	BeeLog.w1(TAG, "Dropbox api exception: " + e.toString());
         	mResult.Error = "unknown error";
-        	if (Common.Ledgers.size() > 0)
-        	{
-        		Common.Ledgers.remove(Common.Ledgers.size()-1);
-        	}
             return false;
         }
     }

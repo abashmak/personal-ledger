@@ -125,12 +125,12 @@ public class Common
     {
     	StringBuilder html = new StringBuilder();
     	String style = "<style>table, th, td {border: 1px solid black; border-collapse: collapse;} th, td {padding: 5px; text-align: left;}</style>";
-    	html.append("<!DOCTYPE html><html><head><title>My Ledgers</title>" + style + "</head><body><table style=\"width:100%\">");
+    	html.append("<!DOCTYPE html><html><head><title>My Ledgers</title>" + style + "</head><body><h1>My Ledgers:</h1><table style=\"width:100%\">");
     	html.append("<tr><th>Title</th><th>Description</th><th>Created By</th><th>Created On</th><th>Modified On</th></tr>");
     	for (JSONObject ledger : Ledgers)
     	{
     		html.append("<tr>");
-    		html.append("<td><a href=\"" + ledger.optString("code") + "/test.html\">" + ledger.optString("title") + "</a></td>");
+    		html.append("<td><a href=\"" + ledger.optString("code") + "/index.html\">" + ledger.optString("title") + "</a></td>");
     		html.append("<td>" + ledger.optString("description") + "</td>");
     		html.append("<td>" + ledger.optString("creator") + "</td>");
     		html.append("<td>" + new Date(ledger.optLong("create_date")) + "</td>");
@@ -150,6 +150,7 @@ public class Common
     	html.append("<label><b>Email: </b><span>" + ledger.optString("email") + "</span></label><br>");
     	html.append("<label><b>Created on: </b><span>" + new Date(ledger.optLong("create_date")) + "</span></label><br>");
     	html.append("<label><b>Modified on: </b><span>" + new Date(ledger.optLong("modify_date")) + "</span></label><br><br>");
+    	html.append("<h2>Entries:</h2>");
     	html.append("<table style=\"width:100%\"><tr><th>Number</th><th>Description</th><th>Amount</th><th>Document Date</th><th>Created On</th><th>Modified On</th></tr>");
     	for (JSONObject entry : Entries)
     	{

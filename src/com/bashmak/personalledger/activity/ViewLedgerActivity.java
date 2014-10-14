@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,9 +19,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bashmak.beeutils.BeeLog;
+import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.EntryListAdapter;
 import com.bashmak.personalledger.R;
 import com.bashmak.personalledger.network.ApiResult;
+import com.bashmak.personalledger.network.DeleteEntryAsync;
 import com.bashmak.personalledger.network.GetLedgerAsync;
 import com.bashmak.personalledger.utility.Common;
 
@@ -34,14 +37,9 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 	{
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.view_ledger);
 		mLedgerPosition = getIntent().getExtras().getInt("position");
 		mLedger = Common.Ledgers.get(mLedgerPosition);
-		((TextView) findViewById(R.id.txtTitle)).setText(mLedger.optString("title"));
-		((TextView) findViewById(R.id.txtDescription)).setText(mLedger.optString("description"));
-		((TextView) findViewById(R.id.txtCreatedBy)).setText(mLedger.optString("creator"));
-		((TextView) findViewById(R.id.txtCreatedOn)).setText(new Date(mLedger.optLong("create_date")).toString());
-		((TextView) findViewById(R.id.txtModified)).setText(new Date(mLedger.optLong("modify_date")).toString());
+		refreshUI();
 	}
 
 	@Override protected void onResume()
@@ -68,9 +66,11 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 
 	@Override public void handleAsyncResult(ApiResult result)
 	{
+		refreshUI();
 		if (!result.Error.isEmpty())
 		{
 			setViewsVisibility(false, false, true, true);
+			BeeToast.showCenteredToastShort(this, result.Error);
 		}
 		else if (result.Response.isEmpty())
 		{
@@ -96,6 +96,10 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 					lv.setOnItemLongClickListener(this);
 					setViewsVisibility(true, false, false, true);
 				}
+				else
+				{
+					setViewsVisibility(false, false, true, true);
+				}
 			}
 			catch (Exception e)
 			{
@@ -107,7 +111,7 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 
 	@Override public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
 	{
-		BeeLog.i1(TAG, "Long item click position " + position);
+		showContextMenu(position);
 		return true;
 	}
 
@@ -153,5 +157,56 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 		findViewById(R.id.progressEntries).setVisibility(progress ? View.VISIBLE : View.GONE);
 		findViewById(R.id.txtNoEntries).setVisibility(text ? View.VISIBLE : View.GONE);
 		findViewById(R.id.btnNewEntry).setVisibility(button ? View.VISIBLE : View.GONE);
+	}
+
+	private void showContextMenu(final int position)
+    {
+		CharSequence[] options = {getString(R.string.txt_view), getString(R.string.txt_delete)};
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.txt_entry_actions);
+		builder.setItems(options, new DialogInterface.OnClickListener()
+		{
+			@Override public void onClick(DialogInterface dialog, int option)
+			{
+				switch (option)
+				{
+				case 0:
+					Intent i = new Intent(ViewLedgerActivity.this, ViewEntryActivity.class);
+					i.putExtra("ledger_position", mLedgerPosition);
+					i.putExtra("entry_position", position);
+					startActivity(i);
+    			   break;
+				case 1:
+					AlertDialog.Builder builder = new AlertDialog.Builder(ViewLedgerActivity.this);
+					builder.setTitle(R.string.txt_confirm_delete);
+					builder.setPositiveButton(R.string.btn_submit, new DialogInterface.OnClickListener()
+					{
+						@Override public void onClick(DialogInterface dialog, int which)
+						{
+							JSONObject entry = Common.Entries.get(position);
+							Common.Entries.remove(position);
+							setProgressView(getString(R.string.txt_wait_delete_entry));
+					        new DeleteEntryAsync(ViewLedgerActivity.this, "/" + mLedger.optString("code") + "/").execute(mLedger, entry);
+						}
+					});
+					builder.setNegativeButton(R.string.btn_cancel, null);
+					builder.create().show();
+					break;
+				default:
+					break;
+				}
+			}
+		});
+		builder.create().show();
+    }
+
+	private void refreshUI()
+	{
+		setContentView(R.layout.view_ledger);
+		((TextView) findViewById(R.id.txtTitle)).setText(mLedger.optString("title"));
+		((TextView) findViewById(R.id.txtDescription)).setText(mLedger.optString("description"));
+		((TextView) findViewById(R.id.txtCreatedBy)).setText(mLedger.optString("creator"));
+		((TextView) findViewById(R.id.txtCreatedOn)).setText(new Date(mLedger.optLong("create_date")).toString());
+		((TextView) findViewById(R.id.txtModified)).setText(new Date(mLedger.optLong("modify_date")).toString());
 	}
 }
