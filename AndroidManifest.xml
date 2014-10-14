@@ -50,7 +50,7 @@
             android:name=".activity.AddEntryActivity"
             android:label="@string/app_name"
             android:parentActivityName=".activity.ViewLedgerActivity"
-            android:windowSoftInputMode="stateHidden" >
+            android:windowSoftInputMode="stateHidden|adjustNothing" >
         </activity>
         
         <activity

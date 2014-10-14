@@ -72,6 +72,11 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 			setViewsVisibility(false, false, true, true);
 			BeeToast.showCenteredToastShort(this, result.Error);
 		}
+		else if (result.Response.equals("delete success"))
+		{
+			setViewsVisibility(false, true, false, false);
+			new GetLedgerAsync(this, "/" + mLedger.optString("code") + "/catalog.json").execute();
+		}
 		else if (result.Response.isEmpty())
 		{
 			setViewsVisibility(false, false, true, true);

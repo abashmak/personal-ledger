@@ -22,7 +22,7 @@ public class DeleteEntryAsync extends AsyncTask<JSONObject, Long, Boolean>
     {
     	mActivity = activity;
         mPath = dropboxPath;
-        mResult = new ApiResult("Success!");
+        mResult = new ApiResult("delete success");
     }
 
     @Override protected Boolean doInBackground(JSONObject... params)

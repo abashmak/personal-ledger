@@ -57,7 +57,7 @@ public class AddEntryActivity extends WrapperActivity
 		}
 		else
 		{
-			BeeToast.showCenteredToastShort(this, result.Response);
+			//BeeToast.showCenteredToastShort(this, result.Response);
 			finish();
 		}
 	}
