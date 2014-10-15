@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import com.bashmak.beeutils.BeeLog;
 import com.bashmak.personalledger.activity.WrapperActivity;
 import com.bashmak.personalledger.utility.Common;
+import com.dropbox.client2.exception.DropboxServerException;
 
 public class DeleteEntryAsync extends AsyncTask<JSONObject, Long, Boolean>
 {
@@ -38,20 +39,52 @@ public class DeleteEntryAsync extends AsyncTask<JSONObject, Long, Boolean>
         	sb.replace(sb.length()-1, sb.length(), "]");
         	byte[] bytes = sb.toString().getBytes("UTF-8");
         	ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        	Common.DropboxApi.putFileOverwrite(mPath + "catalog.json", bais, bytes.length, null);
+        	try
+        	{
+        		Common.DropboxApi.putFileOverwrite(mPath + "catalog.json", bais, bytes.length, null);
+    		}
+    		catch (DropboxServerException e)
+    		{
+        		// Allow for the case where file may have been deleted outside of the api
+    		}
         	bais.close();
     	
         	// Recreate index.html
         	bytes = Common.genHtmlLedger(params[0]).getBytes("UTF-8");
         	bais = new ByteArrayInputStream(bytes);
-        	Common.DropboxApi.putFileOverwrite(mPath + "index.html", bais, bytes.length, null);
+        	try
+        	{
+        		Common.DropboxApi.putFileOverwrite(mPath + "index.html", bais, bytes.length, null);
+    		}
+    		catch (DropboxServerException e)
+    		{
+        		// Allow for the case where file may have been deleted outside of the api
+    		}
         	bais.close();
-        	
+
+        	// Delete <number>.html
+        	try
+        	{
+        		Common.DropboxApi.delete(mPath + params[1].getString("number") + ".html");
+    		}
+    		catch (DropboxServerException e)
+    		{
+        		// Allow for the case where file may have been deleted outside of the api
+    		}
+
         	// Delete images
         	JSONArray images = params[1].getJSONArray("images");
         	for (int i = 0; i < images.length(); i++)
         	{
-            	Common.DropboxApi.delete(mPath + images.getString(i));
+        		try
+        		{
+        			Common.DropboxApi.delete(mPath + images.getString(i));
+        		}
+        		catch (DropboxServerException e)
+        		{
+            		// Allow for the case where file may have been deleted outside of the api
+        			continue;
+        		}
         	}
         	
             return true;

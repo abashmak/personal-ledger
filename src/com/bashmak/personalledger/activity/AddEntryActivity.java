@@ -192,7 +192,7 @@ public class AddEntryActivity extends WrapperActivity
     			int number = Integer.parseInt(entry.optString("number"));
     			if (number >= num)
     			{
-    				num++;
+    				num = number + 1;
     			}
     		}
     		catch (Exception e)

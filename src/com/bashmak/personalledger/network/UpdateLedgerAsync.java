@@ -3,6 +3,7 @@ package com.bashmak.personalledger.network;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.HashMap;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
@@ -34,10 +35,13 @@ public class UpdateLedgerAsync extends AsyncTask<JSONObject, Long, Boolean>
         	int numEntries = Common.Entries.size();
         	if (numEntries > 0)
         	{
+        		HashMap<String, String> entriesHtml = new HashMap<String, String>();
+        		
 	        	// Upload full catalog.json
 	        	StringBuilder sb = new StringBuilder("[ ");
 	        	for (JSONObject entry : Common.Entries)
 	        	{
+	        		entriesHtml.put(entry.optString("number"), Common.genHtmlEntry(entry));
 	        		sb.append(entry.toString()).append(",");
 	        	}
 	        	sb.replace(sb.length()-1, sb.length(), "]");
@@ -45,7 +49,16 @@ public class UpdateLedgerAsync extends AsyncTask<JSONObject, Long, Boolean>
 	        	ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 	        	Common.DropboxApi.putFileOverwrite(mPath + "catalog.json", bais, bytes.length, null);
 	        	bais.close();
-        	
+	        	
+	        	// Upload entry html files
+	        	for (String key : entriesHtml.keySet())
+	        	{
+		        	bytes = entriesHtml.get(key).getBytes("UTF-8");
+		        	bais = new ByteArrayInputStream(bytes);
+		        	Common.DropboxApi.putFileOverwrite(mPath + key + ".html", bais, bytes.length, null);
+		        	bais.close();
+	        	}
+
 	        	// Recreate index.html
 	        	bytes = Common.genHtmlLedger(params[0]).getBytes("UTF-8");
 	        	bais = new ByteArrayInputStream(bytes);

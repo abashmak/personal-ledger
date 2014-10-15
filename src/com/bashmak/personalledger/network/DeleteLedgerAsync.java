@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import com.bashmak.beeutils.BeeLog;
 import com.bashmak.personalledger.activity.WrapperActivity;
 import com.bashmak.personalledger.utility.Common;
+import com.dropbox.client2.exception.DropboxServerException;
 
 public class DeleteLedgerAsync extends AsyncTask<String, Long, Boolean>
 {
@@ -40,20 +41,48 @@ public class DeleteLedgerAsync extends AsyncTask<String, Long, Boolean>
 	        	sb.replace(sb.length()-1, sb.length(), "]");
 	        	byte[] bytes = sb.toString().getBytes("UTF-8");
 	        	ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-	        	Common.DropboxApi.putFileOverwrite(mPath + "ledgers.json", bais, bytes.length, null);
+	        	try
+	        	{
+	        		Common.DropboxApi.putFileOverwrite(mPath + "ledgers.json", bais, bytes.length, null);
+	    		}
+	    		catch (DropboxServerException e)
+	    		{
+	        		// Allow for the case where file may have been deleted outside of the api
+	    		}
 	        	bais.close();
         	
 	        	// Recreate ledgers.html
 	        	bytes = Common.genHtmlLedgers().getBytes("UTF-8");
 	        	bais = new ByteArrayInputStream(bytes);
-	        	Common.DropboxApi.putFileOverwrite(mPath + "ledgers.html", bais, bytes.length, null);
+	        	try
+	        	{
+	        		Common.DropboxApi.putFileOverwrite(mPath + "ledgers.html", bais, bytes.length, null);
+	    		}
+	    		catch (DropboxServerException e)
+	    		{
+	        		// Allow for the case where file may have been deleted outside of the api
+	    		}
 	        	bais.close();
         	}
         	else
         	{
         		// Delete ledgers.json and ledgers.html
-            	Common.DropboxApi.delete(mPath + "ledgers.json");
-            	Common.DropboxApi.delete(mPath + "ledgers.html");
+        		try
+        		{
+        			Common.DropboxApi.delete(mPath + "ledgers.json");
+        		}
+        		catch (DropboxServerException e)
+        		{
+            		// Allow for the case where file may have been deleted outside of the api
+        		}
+        		try
+        		{
+        			Common.DropboxApi.delete(mPath + "ledgers.html");
+        		}
+        		catch (DropboxServerException e)
+        		{
+            		// Allow for the case where file may have been deleted outside of the api
+        		}
         	}
 
         	// Delete ledger folder

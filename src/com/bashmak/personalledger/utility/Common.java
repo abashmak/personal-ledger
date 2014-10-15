@@ -166,6 +166,28 @@ public class Common
     	return html.append("</table></body></html>").toString();
     }
     
+    public static String genHtmlEntry(JSONObject entry)
+    {
+    	StringBuilder html = new StringBuilder("<!DOCTYPE html><html><head><title>Entry</title></head><body>");
+    	html.append("<h1>" + entry.optString("number") + "</h1>");
+    	html.append("<label><b>Description: </b><span>" + entry.optString("description") + "</span></label><br>");
+    	html.append("<label><b>Amount: </b><span>" + entry.optString("amount") + "</span></label><br>");
+    	html.append("<label><b>Document date: </b><span>" + entry.optString("doc_date") + "</span></label><br>");
+    	html.append("<label><b>Created on: </b><span>" + new Date(entry.optLong("create_date")) + "</span></label><br>");
+    	html.append("<label><b>Modified on: </b><span>" + new Date(entry.optLong("modify_date")) + "</span></label><br><br>");
+
+    	JSONArray images = entry.optJSONArray("images");
+    	if (images != null && images.length() > 0)
+    	{
+    	   	html.append("<h2>Images:</h2>");
+    	   	for (int i = 0; i < images.length(); i++)
+    	    {
+    	   		html.append("<img src=\"" + images.optString(i) + "\"/><br>");
+   	    	}
+    	}
+    	return html.append("</body></html>").toString();
+    }
+    
     private static String genUniqueCode(String title)
     {
     	title = title.replaceAll("\\s+","");
