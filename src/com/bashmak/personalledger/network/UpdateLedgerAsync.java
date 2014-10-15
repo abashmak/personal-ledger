@@ -60,6 +60,7 @@ public class UpdateLedgerAsync extends AsyncTask<JSONObject, Long, Boolean>
 	                String path = mPath + image.getName();
 	                Common.DropboxApi.putFileOverwrite(path, fis, file.length(), null);
 	                fis.close();
+	                file.delete();
 	        	}
         	}
         	

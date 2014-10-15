@@ -26,6 +26,7 @@
     <string name="txt_delete">Delete</string>
     <string name="txt_ledger_actions">Ledger Actions</string>
     <string name="txt_entry_actions">Entry Actions</string>
+    <string name="txt_image_actions">Image Actions</string>
     <string name="txt_confirm_delete">Confirm Deletion!</string>
     <string name="txt_created_by">Created by:</string>
     <string name="txt_created_on">Created on:</string>

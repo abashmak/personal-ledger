@@ -2,24 +2,29 @@ package com.bashmak.personalledger.activity;
 
 import java.util.Date;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.GridView;
 import android.widget.TextView;
 
 import com.bashmak.beeutils.BeeLog;
+import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.ImageGridAdapter;
 import com.bashmak.personalledger.R;
 import com.bashmak.personalledger.network.ApiResult;
 import com.bashmak.personalledger.network.GetThumbsAsync;
 import com.bashmak.personalledger.utility.Common;
 
-public class ViewEntryActivity extends WrapperActivity
+public class ViewEntryActivity extends WrapperActivity implements OnItemClickListener, OnItemLongClickListener
 {
 	private final String TAG = "PL-Entry";
 	private JSONObject mLedger;
@@ -48,20 +53,6 @@ public class ViewEntryActivity extends WrapperActivity
 		new GetThumbsAsync(this, "/" + mLedger.optString("code")).execute(mEntry.optString("number"));
     }
 
-	@Override public boolean onCreateOptionsMenu(Menu menu)
-	{
-		// Inflate the menu; this adds items to the action bar if it is present.
-		return true;
-	}
-
-	@Override public boolean onOptionsItemSelected(MenuItem item)
-	{
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		return super.onOptionsItemSelected(item);
-	}
-
 	@Override public void handleAsyncResult(ApiResult result)
 	{
 		if (!result.Error.isEmpty())
@@ -78,10 +69,21 @@ public class ViewEntryActivity extends WrapperActivity
 			ImageGridAdapter adapter = new ImageGridAdapter(this, R.layout.grid_item_1, result.Thumbnails);
 			GridView gv = (GridView) findViewById(R.id.gridThumbs);
 			gv.setAdapter(adapter);
-			//lv.setOnItemClickListener(this);
-			//lv.setOnItemLongClickListener(this);
+			gv.setOnItemClickListener(this);
+			gv.setOnItemLongClickListener(this);
 			setViewsVisibility(true, false, false, true);
 		}
+	}
+
+	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+	{
+		startImageActivity(position);
+	}
+
+	@Override public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+	{
+		showContextMenu(position);
+		return true;
 	}
 
 	public void onDescriptionClicked(View view)
@@ -97,11 +99,63 @@ public class ViewEntryActivity extends WrapperActivity
 		}
 	}
 
+	public void onNewImageClicked(View view)
+	{
+		BeeToast.showCenteredToastShort(this, "Image addition not implemented yet");
+	}
+	
 	private void setViewsVisibility(boolean grid, boolean progress, boolean text, boolean button)
 	{
 		findViewById(R.id.gridThumbs).setVisibility(grid ? View.VISIBLE : View.GONE);
 		findViewById(R.id.progressThumbs).setVisibility(progress ? View.VISIBLE : View.GONE);
 		findViewById(R.id.txtNoThumbs).setVisibility(text ? View.VISIBLE : View.GONE);
 		findViewById(R.id.btnNewImage).setVisibility(button ? View.VISIBLE : View.GONE);
+	}
+
+	private void showContextMenu(final int position)
+    {
+		CharSequence[] options = {getString(R.string.txt_view), getString(R.string.txt_delete)};
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.txt_image_actions);
+		builder.setItems(options, new DialogInterface.OnClickListener()
+		{
+			@Override public void onClick(DialogInterface dialog, int option)
+			{
+				switch (option)
+				{
+				case 0:
+					startImageActivity(position);
+    			   break;
+				case 1:
+					AlertDialog.Builder builder = new AlertDialog.Builder(ViewEntryActivity.this);
+					builder.setTitle(R.string.txt_confirm_delete);
+					builder.setPositiveButton(R.string.btn_submit, new DialogInterface.OnClickListener()
+					{
+						@Override public void onClick(DialogInterface dialog, int which)
+						{
+							BeeToast.showCenteredToastLong(ViewEntryActivity.this, "Image deletion not implemented yet");
+						}
+					});
+					builder.setNegativeButton(R.string.btn_cancel, null);
+					builder.create().show();
+					break;
+				default:
+					break;
+				}
+			}
+		});
+		builder.create().show();
+    }
+
+	private void startImageActivity(int position)
+	{
+		Intent i = new Intent(this, ViewImageActivity.class);
+		i.putExtra("code", mLedger.optString("code"));
+		JSONArray images = mEntry.optJSONArray("images");
+		if (images != null)
+		{
+			i.putExtra("name", images.optString(position));
+		}
+		startActivity(i);
 	}
 }
