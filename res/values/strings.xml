@@ -2,7 +2,12 @@
 <resources>
 
     <string name="app_name">Personal Ledger</string>
-
+    <string name="app_name_ledger">Ledger</string>
+    <string name="app_name_create_ledger">Create Ledger</string>
+    <string name="app_name_entry">Entry</string>
+    <string name="app_name_add_entry">Add Entry</string>
+    <string name="app_name_image">Image</string>
+    
     <string name="action_dropbox_connect">Connect to Dropbox</string>
     <string name="action_dropbox_disconnect">Disconnect from Dropbox</string>
     <string name="action_new_ledger">Create ledger</string>
