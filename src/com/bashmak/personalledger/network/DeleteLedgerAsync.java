@@ -41,27 +41,13 @@ public class DeleteLedgerAsync extends AsyncTask<String, Long, Boolean>
 	        	sb.replace(sb.length()-1, sb.length(), "]");
 	        	byte[] bytes = sb.toString().getBytes("UTF-8");
 	        	ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-	        	try
-	        	{
-	        		Common.DropboxApi.putFileOverwrite(mPath + "ledgers.json", bais, bytes.length, null);
-	    		}
-	    		catch (DropboxServerException e)
-	    		{
-	        		// Allow for the case where file may have been deleted outside of the api
-	    		}
+        		Common.DropboxApi.putFileOverwrite(mPath + "ledgers.json", bais, bytes.length, null);
 	        	bais.close();
         	
 	        	// Recreate ledgers.html
 	        	bytes = Common.genHtmlLedgers().getBytes("UTF-8");
 	        	bais = new ByteArrayInputStream(bytes);
-	        	try
-	        	{
-	        		Common.DropboxApi.putFileOverwrite(mPath + "ledgers.html", bais, bytes.length, null);
-	    		}
-	    		catch (DropboxServerException e)
-	    		{
-	        		// Allow for the case where file may have been deleted outside of the api
-	    		}
+        		Common.DropboxApi.putFileOverwrite(mPath + "ledgers.html", bais, bytes.length, null);
 	        	bais.close();
         	}
         	else
@@ -74,6 +60,10 @@ public class DeleteLedgerAsync extends AsyncTask<String, Long, Boolean>
         		catch (DropboxServerException e)
         		{
             		// Allow for the case where file may have been deleted outside of the api
+                	if (e.error != DropboxServerException._404_NOT_FOUND)
+                	{
+                		throw new Exception(e);
+                	}
         		}
         		try
         		{
@@ -82,12 +72,26 @@ public class DeleteLedgerAsync extends AsyncTask<String, Long, Boolean>
         		catch (DropboxServerException e)
         		{
             		// Allow for the case where file may have been deleted outside of the api
+                	if (e.error != DropboxServerException._404_NOT_FOUND)
+                	{
+                		throw new Exception(e);
+                	}
         		}
         	}
 
         	// Delete ledger folder
-        	Common.DropboxApi.delete(mPath + params[0]);
-        	
+        	try
+        	{
+        		Common.DropboxApi.delete(mPath + params[0]);
+        	}
+        	catch (DropboxServerException e)
+        	{
+        		// Allow for the case where file may have been deleted outside of the api
+            	if (e.error != DropboxServerException._404_NOT_FOUND)
+            	{
+            		throw new Exception(e);
+            	}
+        	}
             return true;
         }
         catch (Exception e)

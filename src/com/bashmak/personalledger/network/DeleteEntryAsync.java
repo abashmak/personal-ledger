@@ -39,27 +39,13 @@ public class DeleteEntryAsync extends AsyncTask<JSONObject, Long, Boolean>
         	sb.replace(sb.length()-1, sb.length(), "]");
         	byte[] bytes = sb.toString().getBytes("UTF-8");
         	ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        	try
-        	{
-        		Common.DropboxApi.putFileOverwrite(mPath + "catalog.json", bais, bytes.length, null);
-    		}
-    		catch (DropboxServerException e)
-    		{
-        		// Allow for the case where file may have been deleted outside of the api
-    		}
+       		Common.DropboxApi.putFileOverwrite(mPath + "catalog.json", bais, bytes.length, null);
         	bais.close();
     	
         	// Recreate index.html
         	bytes = Common.genHtmlLedger(params[0]).getBytes("UTF-8");
         	bais = new ByteArrayInputStream(bytes);
-        	try
-        	{
-        		Common.DropboxApi.putFileOverwrite(mPath + "index.html", bais, bytes.length, null);
-    		}
-    		catch (DropboxServerException e)
-    		{
-        		// Allow for the case where file may have been deleted outside of the api
-    		}
+       		Common.DropboxApi.putFileOverwrite(mPath + "index.html", bais, bytes.length, null);
         	bais.close();
 
         	// Delete <number>.html
@@ -70,6 +56,10 @@ public class DeleteEntryAsync extends AsyncTask<JSONObject, Long, Boolean>
     		catch (DropboxServerException e)
     		{
         		// Allow for the case where file may have been deleted outside of the api
+            	if (e.error != DropboxServerException._404_NOT_FOUND)
+            	{
+            		throw new Exception(e);
+            	}
     		}
 
         	// Delete images
@@ -83,7 +73,10 @@ public class DeleteEntryAsync extends AsyncTask<JSONObject, Long, Boolean>
         		catch (DropboxServerException e)
         		{
             		// Allow for the case where file may have been deleted outside of the api
-        			continue;
+                	if (e.error != DropboxServerException._404_NOT_FOUND)
+                	{
+                		throw new Exception(e);
+                	}
         		}
         	}
         	
