@@ -3,6 +3,7 @@ package com.bashmak.personalledger.activity;
 import java.util.Date;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
@@ -21,6 +22,7 @@ import com.bashmak.beeutils.BeeToast;
 import com.bashmak.personalledger.ImageGridAdapter;
 import com.bashmak.personalledger.R;
 import com.bashmak.personalledger.network.ApiResult;
+import com.bashmak.personalledger.network.DeleteImageAsync;
 import com.bashmak.personalledger.network.GetThumbsAsync;
 import com.bashmak.personalledger.utility.Common;
 
@@ -59,6 +61,11 @@ public class ViewEntryActivity extends WrapperActivity implements OnItemClickLis
 		{
 			setViewsVisibility(false, false, true, true);
 			BeeLog.i1(TAG, "Error retrieving thumbs: " + result.Error);
+		}
+		else if (result.Response.equals("delete success"))
+		{
+			setViewsVisibility(false, true, false, false);
+			new GetThumbsAsync(this, "/" + mLedger.optString("code")).execute(mEntry.optString("number"));
 		}
 		else if (result.Thumbnails.isEmpty())
 		{
@@ -109,7 +116,8 @@ public class ViewEntryActivity extends WrapperActivity implements OnItemClickLis
 		findViewById(R.id.gridThumbs).setVisibility(grid ? View.VISIBLE : View.GONE);
 		findViewById(R.id.progressThumbs).setVisibility(progress ? View.VISIBLE : View.GONE);
 		findViewById(R.id.txtNoThumbs).setVisibility(text ? View.VISIBLE : View.GONE);
-		findViewById(R.id.btnNewImage).setVisibility(button ? View.VISIBLE : View.GONE);
+		//findViewById(R.id.btnNewImage).setVisibility(button ? View.VISIBLE : View.GONE);
+		findViewById(R.id.btnNewImage).setVisibility(View.GONE);
 	}
 
 	private void showContextMenu(final int position)
@@ -133,7 +141,41 @@ public class ViewEntryActivity extends WrapperActivity implements OnItemClickLis
 					{
 						@Override public void onClick(DialogInterface dialog, int which)
 						{
-							BeeToast.showCenteredToastLong(ViewEntryActivity.this, "Image deletion not implemented yet");
+							for (int i = 0; i < Common.Entries.size(); i++)
+							{
+								String imgName = "";
+								if (Common.Entries.get(i).optString("number").equals(mEntry.optString("number")))
+								{
+									JSONArray images = mEntry.optJSONArray("images");
+									if (images != null)
+									{
+										JSONArray newImages = new JSONArray();
+										for (int j = 0; j < images.length(); j++)
+										{
+											if (j != position)
+											{
+												newImages.put(images.optString(j));
+											}
+											else
+											{
+												imgName = images.optString(j);
+											}
+										}
+										try
+										{
+											mEntry.putOpt("images", newImages);
+											Common.Entries.set(i, mEntry);
+										}
+										catch (JSONException e)
+										{
+											e.printStackTrace();
+										}
+									}
+									setViewsVisibility(false, true, false, false);
+									new DeleteImageAsync(ViewEntryActivity.this, "/" + mLedger.optString("code") + "/", imgName).execute(mEntry);
+									break;
+								}
+							}
 						}
 					});
 					builder.setNegativeButton(R.string.btn_cancel, null);
