@@ -125,7 +125,8 @@ public class Common
     {
     	StringBuilder html = new StringBuilder();
     	String style = "<style>table, th, td {border: 1px solid black; border-collapse: collapse;} th, td {padding: 5px; text-align: left;}</style>";
-    	html.append("<!DOCTYPE html><html><head><title>My Ledgers</title>" + style + "</head><body><h1>My Ledgers:</h1><table style=\"width:100%\">");
+    	html.append("<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>My Ledgers</title>");
+    	html.append(style).append("</head><body><h1>My Ledgers:</h1><table style=\"width:100%\">");
     	html.append("<tr><th>Title</th><th>Description</th><th>Created By</th><th>Created On</th><th>Modified On</th></tr>");
     	for (JSONObject ledger : Ledgers)
     	{
@@ -143,7 +144,7 @@ public class Common
     public static String genHtmlLedger(JSONObject ledger)
     {
     	String style = "<style>table, th, td {border: 1px solid black; border-collapse: collapse;} th, td {padding: 5px; text-align: left;}</style>";
-    	StringBuilder html = new StringBuilder("<!DOCTYPE html><html><head><title>Ledger</title>" + style + "</head><body>");
+    	StringBuilder html = new StringBuilder("<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Ledger</title>" + style + "</head><body>");
     	html.append("<h1>" + ledger.optString("title") + "</h1>");
     	html.append("<label><b>Description: </b><span>" + ledger.optString("description") + "</span></label><br>");
     	html.append("<label><b>Created by: </b><span>" + ledger.optString("creator") + "</span></label><br>");
@@ -168,7 +169,7 @@ public class Common
     
     public static String genHtmlEntry(JSONObject entry)
     {
-    	StringBuilder html = new StringBuilder("<!DOCTYPE html><html><head><title>Entry</title></head><body>");
+    	StringBuilder html = new StringBuilder("<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Entry</title></head><body>");
     	html.append("<h1>" + entry.optString("number") + "</h1>");
     	html.append("<label><b>Description: </b><span>" + entry.optString("description") + "</span></label><br>");
     	html.append("<label><b>Amount: </b><span>" + entry.optString("amount") + "</span></label><br>");
