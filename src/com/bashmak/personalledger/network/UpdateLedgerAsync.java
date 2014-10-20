@@ -8,6 +8,8 @@ import java.util.HashMap;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 
 import com.bashmak.beeutils.BeeLog;
@@ -74,6 +76,12 @@ public class UpdateLedgerAsync extends AsyncTask<JSONObject, Long, Boolean>
 	                Common.DropboxApi.putFileOverwrite(path, fis, file.length(), null);
 	                fis.close();
 	                file.delete();
+	                if (mActivity != null)
+	                {
+			    		Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+			    		mediaScanIntent.setData(Uri.fromFile(file));
+			    		mActivity.sendBroadcast(mediaScanIntent);
+	                }
 	        	}
         	}
         	
