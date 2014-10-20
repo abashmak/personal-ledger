@@ -63,6 +63,7 @@ public class ViewLedgerActivity extends WrapperActivity implements OnItemClickLi
 		}
 		else if (result.Response.isEmpty())
 		{
+			Common.Entries.clear();
 			setViewsVisibility(false, false, true, true);
 		}
 		else
