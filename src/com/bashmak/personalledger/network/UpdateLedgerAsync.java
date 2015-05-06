@@ -16,6 +16,7 @@ import com.bashmak.beeutils.BeeLog;
 import com.bashmak.personalledger.activity.WrapperActivity;
 import com.bashmak.personalledger.utility.Common;
 
+@SuppressWarnings("deprecation")
 public class UpdateLedgerAsync extends AsyncTask<JSONObject, Long, Boolean>
 {
 	private final static String TAG = "PL-UpdateLedger";

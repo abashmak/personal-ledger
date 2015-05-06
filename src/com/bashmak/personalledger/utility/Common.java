@@ -16,6 +16,7 @@ import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.AppKeyPair;
 
+@SuppressWarnings("deprecation")
 public class Common
 {
     private final static String APP_KEY = "v9izdoem5z240yn";

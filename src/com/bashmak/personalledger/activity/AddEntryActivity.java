@@ -32,6 +32,7 @@ import com.bashmak.personalledger.network.ApiResult;
 import com.bashmak.personalledger.network.UpdateLedgerAsync;
 import com.bashmak.personalledger.utility.Common;
 
+@SuppressWarnings("deprecation")
 public class AddEntryActivity extends WrapperActivity
 {
 	private JSONObject mLedger;
